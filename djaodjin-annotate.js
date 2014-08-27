@@ -23,32 +23,33 @@ MIT License
       this.$el = $(el);
       this.check_redo_undo();
       this.options = options;
-      this._init()
+      this._init();
    }
    
    Annotate.prototype = {
       _init: function () {
          _this = this;
-         canvas = document.getElementById(_this.$el.attr('id'))
+         canvas = document.getElementById(_this.$el.attr('id'));
          
          context = canvas.getContext('2d');
          type = _this.options.type;
          color = _this.options.color;
-         canvas.width = _this.options.width
-         canvas.height = _this.options.height
+         canvas.width = _this.options.width;
+         canvas.height = _this.options.height;
 
-         var class_position1 = "btn-group"
-         var class_position2 = ""
+         var class_position1 = "btn-group";
+         var class_position2 = "";
 
          if (_this.options.position == "left" || _this.options.position == "right"){
-            var class_position1 = "btn-group-vertical"
-            var class_position2 = "btn-block" 
+            class_position1 = "btn-group-vertical";
+            class_position2 = "btn-block" ;
          }
 
 
-         $('#annotate_section').css({"width":_this.options.width,"height":_this.options.height})
+         $('#annotate_section').css({"width":_this.options.width,"height":_this.options.height});
          _this.$el.css({"border":"1px solid black"});
          if (_this.options.bootstrap){
+            /*jshint multistr: true */
             $('body').append('<div id="annotate_tools">\
                <a id="undoaction" title="Undo the last annotation" class="btn btn-primary '+class_position2+'"><i class="fa fa-undo"></i></a>\
                <div class="'+ class_position1 +'" data-toggle="buttons">\
@@ -75,24 +76,24 @@ MIT License
          }
          var position = _this.$el.offset();
          if (_this.options.position != "top" && !_this.options.bootstrap){
-            $('#annotate_tools').append('<em>Position option available only with <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></em>')
+            $('#annotate_tools').append('<em>Position option available only with <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></em>');
          }
 
          if (_this.options.position == "top" || (_this.options.position != "top" && !_this.options.bootstrap)){
-            $('#annotate_tools').css({"position":'absolute', "top":position.top - 35, "left":position.left})
+            $('#annotate_tools').css({"position":'absolute', "top":position.top - 35, "left":position.left});
          }else{
             if (_this.options.position == "left" && _this.options.bootstrap){
-               $('#annotate_tools').css({"position":'absolute', "top":position.top - 35, "left":position.left - 20})
+               $('#annotate_tools').css({"position":'absolute', "top":position.top - 35, "left":position.left - 20});
             }else if (_this.options.position == "right" && _this.options.bootstrap){
-               $('#annotate_tools').css({"position":'absolute', "top":position.top - 35, "left":position.left + canvas.width + 20})
+               $('#annotate_tools').css({"position":'absolute', "top":position.top - 35, "left":position.left + canvas.width + 20});
             }else if (_this.options.position == "bottom" && _this.options.bootstrap){
-               $('#annotate_tools').css({"position":'absolute', "top":position.top + canvas.height + 35 , "left":position.left})
+               $('#annotate_tools').css({"position":'absolute', "top":position.top + canvas.height + 35 , "left":position.left});
             }
          }
          
          
           
-         $('body').append('<textarea id="input_text" style="position:absolute;z-index:100000;display:none;top:0;left:0;background:transparent;border:1px dotted '+ _this.options.color +';font-size:'+ _this.options.fontsize +';font-family:sans-serif;color:'+_this.options.color+';word-wrap: break-word;outline-width: 0;overflow: hidden;"></textarea>');
+         $('body').append('<textarea id="input_text" style="position:absolute;z-index:100000;display:none;top:0;left:0;background:transparent;border:1px dotted '+ _this.options.color +';font-size:'+ _this.options.fontsize +';font-family:sans-serif;color:'+_this.options.color+';word-wrap: break-word;outline-width: 0;overflow: hidden;padding:0px"></textarea>');
          
         
          
@@ -101,7 +102,7 @@ MIT License
             img.src = _this.options.img;
             img.onload = function () {
                context.drawImage(img,  0, 0, _this.options.width, _this.options.height);
-            }
+            };
          }
             
          $(document).on('change','input[name="tool_option"]', _this._selecttool);
@@ -115,14 +116,14 @@ MIT License
       
       check_redo_undo: function(){
          if (stored_undo.length == 0){
-            $('#redoaction').attr('disabled',true)
+            $('#redoaction').attr('disabled',true);
          }else{
-            $('#redoaction').attr('disabled',false)
+            $('#redoaction').attr('disabled',false);
          }
          if (stored_element.length == 0){
-            $('#undoaction').attr('disabled',true)
+            $('#undoaction').attr('disabled',true);
          }else{
-            $('#undoaction').attr('disabled',false)
+            $('#undoaction').attr('disabled',false);
          }
       },
       
@@ -152,7 +153,7 @@ MIT License
          }
          // redraw each stored line
          for (var i = 0; i < stored_element.length; i++) {
-            var element = stored_element[i]
+            var element = stored_element[i];
             if (element.type == 'rectangle'){
                _this.drawRectangle(element.fromx, element.fromy, element.tox, element.toy);
             }else if (element.type == 'arrow'){
@@ -211,7 +212,7 @@ MIT License
          context.font= _this.options.fontsize +" sans-serif";
          context.textBaseline = 'top';
          context.fillStyle = _this.options.color;
-         _this.wrapText(context, text, x+3, y+4, maxWidth, 30) 
+         _this.wrapText(context, text, x+3, y+4, maxWidth, 25) ;
       },
       
       
@@ -222,7 +223,7 @@ MIT License
             var text = $('#input_text').val();
             $('#input_text').val('').hide();
             if (text != '' ){
-               stored_element.push({'type':'text','text':text,'fromx':fromx,'fromy':fromy,'maxwidth':tox})
+               stored_element.push({'type':'text','text':text,'fromx':fromx,'fromy':fromy,'maxwidth':tox});
                if (stored_undo.length > 0){
                   stored_undo = [];
                }
@@ -238,15 +239,18 @@ MIT License
             var text = $('#input_text').val();
             $('#input_text').val('').hide();
             if (text != '' ){
-               stored_element.push({'type':'text','text':text,'fromx':fromx_text - offset.left,'fromy':fromy_text- offset.top,'maxwidth':tox})
+               if (!tox){
+                  tox = 100;
+               }
+               stored_element.push({'type':'text','text':text,'fromx':fromx_text - offset.left,'fromy':fromy_text- offset.top,'maxwidth':tox});
                if (stored_undo.length > 0){
                   stored_undo = [];
                }
             }
-            _this.redraw()
+            _this.redraw();
          }
-         tox = null
-         toy = null
+         tox = null;
+         toy = null;
 
          fromx = event.pageX - offset.left;
          fromy = event.pageY - offset.top;
@@ -261,10 +265,10 @@ MIT License
          clicked = false;
          if (toy != null && tox != null){
             if (_this.options.type=='rectangle'){
-               stored_element.push({'type':'rectangle','fromx':fromx,'fromy':fromy,'tox':tox,'toy':toy})
+               stored_element.push({'type':'rectangle','fromx':fromx,'fromy':fromy,'tox':tox,'toy':toy});
             }else if (_this.options.type == 'arrow'){
-               stored_element.push({'type':'arrow','fromx':fromx,'fromy':fromy,'tox':tox,'toy':toy})
-            }else if (_this.options.type == 'text'){;
+               stored_element.push({'type':'arrow','fromx':fromx,'fromy':fromy,'tox':tox,'toy':toy});
+            }else if (_this.options.type == 'text'){
                $('#input_text').css({left: fromx_text+2, top: fromy_text, width: tox-12, height: toy});
             }
             if (stored_undo.length > 0){
@@ -281,7 +285,7 @@ MIT License
       
       _mousemove: function(event){
          if (clicked == false) return;
-         _this.redraw()
+         _this.redraw();
          var offset = _this.$el.offset();
          if (_this.options.type == 'rectangle'){
             tox = event.pageX - offset.left - fromx;
@@ -297,7 +301,7 @@ MIT License
             $('#input_text').css({left: fromx_text+2, top:fromy_text, width: tox-12, height: toy});
          }
       }
-   }
+   };
    
    $.fn.annotate = function(options) {
       var opts = $.extend( {}, $.fn.annotate.defaults, options );
