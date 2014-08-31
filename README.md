@@ -1,6 +1,8 @@
 #djaodjin-annotate.js
 
-djaodjin-annotate.js is a simple jquery plugin allowing you to annotate a screenshot.
+djaodjin-annotate.js is a simple jquery plugin allowing you to annotate
+a screenshot. Try the live demo on [DjaoDjin blog](https://djaodjin.com/blog/jquery-plugin-to-annotate-images.blog).
+
 
 #Usage
 
