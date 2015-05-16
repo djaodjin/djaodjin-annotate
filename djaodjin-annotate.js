@@ -6,15 +6,20 @@ MIT License
 
 (function ($) {
    var _this = null;
-   var canvas = null;
-   var context = null;
+   var baseCanvas = null;
+   var drawingCanvas = null;
+   var baseContext = null;
+   var drawingContext = null;
    var clicked = false;
    var fromx = null;
    var fromy = null;
+   var prevx = null;
+   var prevy = null;
    var fromx_text = null;
    var fromy_text = null;
    var tox = null;
    var toy = null;
+   var points = [];
    var stored_undo = [];
    var stored_element = [];
    var img = null;
@@ -29,14 +34,21 @@ MIT License
    Annotate.prototype = {
       _init: function () {
          _this = this;
-         canvas = document.getElementById(_this.$el.attr('id'));
-         
-         context = canvas.getContext('2d');
+         _this.$el.addClass('annotate-container');
+         // console.log(container);
+         _this.$el.append($('<canvas id="baseLayer"></canvas>'));
+         _this.$el.append($('<canvas id="drawingLayer"></canvas>'));
+         baseCanvas = document.getElementById('baseLayer');
+         drawingCanvas = document.getElementById('drawingLayer');
+         baseContext = baseCanvas.getContext('2d');
+         drawingContext = drawingCanvas.getContext('2d');
          type = _this.options.type;
          color = _this.options.color;
-         canvas.width = _this.options.width;
-         canvas.height = _this.options.height;
+         baseCanvas.width = drawingCanvas.width = _this.options.width;
+         baseCanvas.height = drawingCanvas.height = _this.options.height;
 
+         baseContext.lineJoin = "round";
+         drawingContext.lineJoin = "round";
          var class_position1 = "btn-group";
          var class_position2 = "";
 
@@ -51,19 +63,22 @@ MIT License
          if (_this.options.bootstrap){
             /*jshint multistr: true */
             $('body').append('<div id="annotate_tools">\
-               <a id="undoaction" title="Undo the last annotation" class="btn btn-primary '+class_position2+'"><i class="fa fa-undo"></i></a>\
+               <a id="undoaction" title="Undo the last annotation" class="btn btn-primary '+class_position2+'"><i class="glyphicon glyphicon-arrow-left"></i></a>\
                <div class="'+ class_position1 +'" data-toggle="buttons">\
                <label class="btn btn-primary active">\
-               <input type="radio" name="tool_option" id="rectangle" data-toggle="tooltip" data-placement="top" title="Draw an rectangle"><i class="fa fa-square-o"></i>\
+               <input type="radio" name="tool_option" id="rectangle" data-toggle="tooltip" data-placement="top" title="Draw an rectangle"><i class="glyphicon glyphicon-unchecked"></i>\
                </label>\
                <label class="btn btn-primary">\
-               <input type="radio" name="tool_option" id="text" data-toggle="tooltip" data-placement="top" title="Write some text"> T\
+               <input type="radio" name="tool_option" id="text" data-toggle="tooltip" data-placement="top" title="Write some text"> <i class="glyphicon glyphicon-font"></i>\
                </label>\
                <label class="btn btn-primary">\
-               <input type="radio" name="tool_option" id="arrow" data-toggle="tooltip" data-placement="top" title="Draw an arrow"> <i class="fa fa-long-arrow-up"></i>\
+               <input type="radio" name="tool_option" id="arrow" data-toggle="tooltip" data-placement="top" title="Draw an arrow"> <i class="glyphicon glyphicon-arrow-up"></i>\
+               </label>\
+               <label class="btn btn-primary">\
+               <input type="radio" name="tool_option" id="pen" data-toggle="tooltip" data-placement="top" title="Pen Tool"> <i class="glyphicon glyphicon-pencil"></i>\
                </label>\
                </div>\
-               <a type="button" id="redoaction" title="Redo the last undone annotation" class="btn btn-primary ' + class_position2 +'"><i class="fa fa-undo fa-flip-horizontal"></i></a>\
+               <a type="button" id="redoaction" title="Redo the last undone annotation" class="btn btn-primary ' + class_position2 +'"><i class="glyphicon glyphicon-arrow-right"></i></a>\
                </div>');
          }else{
             $('body').append('<div id="annotate_tools" style="display:inline-block">\
@@ -71,6 +86,7 @@ MIT License
                <input type="radio" name="tool_option" id="rectangle" checked>RECTANGLE\
                <input type="radio" name="tool_option" id="text"> TEXT\
                <input type="radio" name="tool_option" id="arrow">ARROW\
+               <input type="radio" name="tool_option" id="pen">PEN\
                <button id="redoaction" title="Redo the last undone annotation">REDO</button>\
                </div>');
          }
@@ -101,7 +117,7 @@ MIT License
             img = new Image();
             img.src = _this.options.img;
             img.onload = function () {
-               context.drawImage(img,  0, 0, _this.options.width, _this.options.height);
+               baseContext.drawImage(img,  0, 0, _this.options.width, _this.options.height);
             };
          }
             
@@ -132,6 +148,7 @@ MIT License
          stored_undo.push(stored_element[stored_element.length -1]);
          stored_element.pop();
          _this.check_redo_undo();
+         _this.clear();
          _this.redraw();
       },
       
@@ -140,32 +157,46 @@ MIT License
          stored_element.push(stored_undo[stored_undo.length -1]);
          stored_undo.pop();
          _this.check_redo_undo();
+         _this.clear();
          _this.redraw();
       },
       
       redraw: function(){
-         canvas.width = canvas.width;
+         baseCanvas.width = baseCanvas.width;
          if (_this.options.img){
-            context.drawImage(img,  0, 0, _this.options.width, _this.options.height);
+           baseContext.drawImage(img,  0, 0, _this.options.width, _this.options.height);
          }
          if (stored_element.length == 0) {
             return;
          }
-         // redraw each stored line
+         // clear each stored line
          for (var i = 0; i < stored_element.length; i++) {
             var element = stored_element[i];
             if (element.type == 'rectangle'){
-               _this.drawRectangle(element.fromx, element.fromy, element.tox, element.toy);
+               _this.drawRectangle(baseContext, element.fromx, element.fromy, element.tox, element.toy);
             }else if (element.type == 'arrow'){
-               _this.drawArrow(element.fromx, element.fromy,element.tox,element.toy);
+               _this.drawArrow(baseContext, element.fromx, element.fromy,element.tox,element.toy);
+             }else if (element.type == 'pen'){
+              for(var b = 0; b < element.points.length-1; b++){
+                fromx = element.points[b][0];
+                fromy = element.points[b][1];
+                tox = element.points[b + 1][0];
+                toy = element.points[b + 1][1];
+                _this.drawPen(baseContext,fromx, fromy, tox, toy);
+             }    
             }else if (element.type == 'text'){
-               _this.drawText(element.text, element.fromx,element.fromy, element.maxwidth);
+               _this.drawText(baseContext, element.text, element.fromx,element.fromy, element.maxwidth);
             }
          }
       },
+
+      clear: function(){
+         //Clear Canvas
+         drawingCanvas.width = drawingCanvas.width;
+      },
       
       
-      drawRectangle: function(x, y, w, h){
+      drawRectangle: function(context, x, y, w, h){
          context.beginPath();
          context.rect(x, y, w, h);
          context.fillStyle = 'transparent';
@@ -175,7 +206,7 @@ MIT License
          context.stroke();
       },
    
-      drawArrow: function(x, y, w, h){
+      drawArrow: function(context, x, y, w, h){
          var angle = Math.atan2(h-y,w-x);
          context.beginPath();
          context.lineWidth = _this.options.linewidth;
@@ -187,17 +218,27 @@ MIT License
          context.strokeStyle = _this.options.color;
          context.stroke();
       },
+
+      drawPen: function(context, fromx, fromy, tox, toy){
+         context.lineWidth = _this.options.linewidth;
+         context.moveTo(fromx, fromy);
+         context.lineTo(tox, toy);
+         
+         context.strokeStyle = _this.options.color;
+         
+         context.stroke();
+      },
       
-      wrapText: function(context, text, x, y, maxWidth, lineHeight) {
+      wrapText: function(drawingContext, text, x, y, maxWidth, lineHeight) {
          var words = text.split(' ');
          var line = '';
 
          for(var n = 0; n < words.length; n++) {
             var testLine = line + words[n] + ' ';
-            var metrics = context.measureText(testLine);
+            var metrics = drawingContext.measureText(testLine);
             var testWidth = metrics.width;
             if (testWidth > maxWidth && n > 0) {
-               context.fillText(line, x, y);
+               drawingContext.fillText(line, x, y);
                line = words[n] + ' ';
                y += lineHeight;
             }
@@ -205,10 +246,10 @@ MIT License
                line = testLine;
             }
          }
-         context.fillText(line, x, y);
+         drawingContext.fillText(line, x, y);
       },
       
-      drawText: function(text, x, y, maxWidth){
+      drawText: function(context, text, x, y, maxWidth){
          context.font= _this.options.fontsize +" sans-serif";
          context.textBaseline = 'top';
          context.fillStyle = _this.options.color;
@@ -228,7 +269,7 @@ MIT License
                   stored_undo = [];
                }
             }
-            _this.redraw();
+            _this.clear();
          }
       },
       
@@ -242,15 +283,17 @@ MIT License
                if (!tox){
                   tox = 100;
                }
+               _this.drawText(baseContext, text, fromx_text - offset.left, fromy_text- offset.top, tox);
                stored_element.push({'type':'text','text':text,'fromx':fromx_text - offset.left,'fromy':fromy_text- offset.top,'maxwidth':tox});
                if (stored_undo.length > 0){
                   stored_undo = [];
                }
             }
-            _this.redraw();
+            _this.clear();
          }
          tox = null;
          toy = null;
+         points = [];
 
          fromx = event.pageX - offset.left;
          fromy = event.pageY - offset.top;
@@ -259,15 +302,31 @@ MIT License
          if (_this.options.type == 'text'){
             $('#input_text').css({"left": fromx_text+2, "top": fromy_text, "width": 0, "height": 0}).show();
          }
+         if (_this.options.type == 'pen'){
+            points.push([fromx,fromy]);
+         }
       },
       
       _mouseup: function(event){
          clicked = false;
          if (toy != null && tox != null){
             if (_this.options.type=='rectangle'){
+               _this.drawRectangle(baseContext, fromx, fromy, tox, toy);
                stored_element.push({'type':'rectangle','fromx':fromx,'fromy':fromy,'tox':tox,'toy':toy});
             }else if (_this.options.type == 'arrow'){
+               _this.drawArrow(baseContext, fromx, fromy, tox, toy);
                stored_element.push({'type':'arrow','fromx':fromx,'fromy':fromy,'tox':tox,'toy':toy});
+            }else if (_this.options.type == 'pen'){
+               // console.log(points);
+               stored_element.push({'type':'pen', 'points': points});
+               for(var i = 0; i < points.length-1; i++){
+                  fromx = points[i][0];
+                  fromy = points[i][1];
+                  tox = points[i + 1][0];
+                  toy = points[i + 1][1];
+                  _this.drawPen(baseContext,fromx, fromy, tox, toy);
+               }    
+               points = [];
             }else if (_this.options.type == 'text'){
                $('#input_text').css({left: fromx_text+2, top: fromy_text, width: tox-12, height: toy});
             }
@@ -275,7 +334,7 @@ MIT License
                   stored_undo = [];
             }
             _this.check_redo_undo();
-            _this.redraw();
+            _this.clear();
          }else{
             if (_this.options.type == 'text'){
                $('#input_text').css({left: fromx_text+2, top: fromy_text, width: 100, height: 50});
@@ -285,17 +344,27 @@ MIT License
       
       _mousemove: function(event){
          if (clicked == false) return;
-         _this.redraw();
+         // _this.clear();
          var offset = _this.$el.offset();
          if (_this.options.type == 'rectangle'){
+            _this.clear();
             tox = event.pageX - offset.left - fromx;
             toy = event.pageY - offset.top - fromy;
-            _this.drawRectangle(fromx, fromy, tox, toy);
+            _this.drawRectangle(drawingContext, fromx, fromy, tox, toy);
          }else if (_this.options.type == 'arrow'){
+            _this.clear();
             tox = event.pageX - offset.left;
             toy = event.pageY - offset.top;
-            _this.drawArrow(fromx, fromy, tox, toy);
+            _this.drawArrow(drawingContext, fromx, fromy, tox, toy);
+         }else if (_this.options.type == 'pen'){
+            tox = event.pageX - offset.left;
+            toy = event.pageY - offset.top;
+            fromx = points[points.length - 1][0];
+            fromy = points[points.length - 1][1];
+            points.push([tox, toy])
+            _this.drawPen(drawingContext,fromx, fromy, tox, toy);
          }else if (_this.options.type == 'text'){
+            _this.clear();
             tox = event.pageX - fromx_text;
             toy = event.pageY - fromy_text;
             $('#input_text').css({left: fromx_text+2, top:fromy_text, width: tox-12, height: toy});

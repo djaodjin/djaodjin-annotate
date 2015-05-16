@@ -5,19 +5,22 @@
 		Exemple de HTML
 	</title>
 </head>
+<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="css/annotate.css">
 <body>
 	
 	<div style="height:50px;">
 		
 	</div>
 
-	<canvas id="myCanvas"></canvas>
+	<div id="myCanvas"></div>
 
 	<script type="text/javascript" src="vendor/jquery.min.js"></script>
 	<script type="text/javascript" src="djaodjin-annotate.js"></script>
+	<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script>
 		$(document).ready(function(){
-			$('#myCanvas').annotate()
+			$('#myCanvas').annotate({color: 'blue', bootstrap: true, img: 'images/test.jpg'})
 		})
 	</script>
 </body>
