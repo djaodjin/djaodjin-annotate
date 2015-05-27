@@ -1,29 +1,30 @@
 {
-	"name": "djaodjin-annotate",
-	"description": "Simple plugin to annotate a screenshot",
-	"version": "0.0.1",
-	"dependencies": {
-		"jquery": ">=1.11"
-	},
-	"keywords": [
-		"canvas",
-		"annotate",
-		"image",
-		"draw",
-		"jQuery"
-	],
-	"authors": [
-		{
-			"name": "Djaodjin Inc",
-			"url": "https://djaodjin.com",
-			"email": "support@djaodjin.com"
-		}
-	],
-	"licenses": [
-		{
-			"type": "MIT",
-			"url": "http://opensource.org/licenses/MIT"
-		}
-	],
-	"main": "djaodjin-annotate.js"
+  "name": "djaodjin-annotate",
+  "description": "Simple plugin to annotate a screenshot",
+  "version": "0.0.1",
+  "dependencies": {
+    "jquery": ">=1.11",
+    "bootstrap": "~3.3.4"
+  },
+  "keywords": [
+    "canvas",
+    "annotate",
+    "image",
+    "draw",
+    "jQuery"
+  ],
+  "authors": [
+    {
+      "name": "Djaodjin Inc",
+      "url": "https://djaodjin.com",
+      "email": "support@djaodjin.com"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "main": "djaodjin-annotate.js"
 }
