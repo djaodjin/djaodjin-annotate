@@ -6,10 +6,10 @@ a screenshot. Try the live demo on [DjaoDjin blog](https://djaodjin.com/blog/jqu
 
 #Usage
 
-Just add a canvas into html.
+Just add a div element into html.
 
 ```html
-	<canvas id="myCanvas"></canvas>
+	<div id="myCanvas"></div>
 ```
 
 load djaodjin-annotate.js
