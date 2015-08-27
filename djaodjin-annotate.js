@@ -64,6 +64,11 @@ MIT License
                + " title=\"Draw an rectangle\"><i class=\"glyphicon glyphicon-unchecked\"></i>"
                + "</label>"
                + "<label class=\"btn btn-primary\">"
+               + "<input type=\"radio\" name=\"tool_option\" id=\"circle\""
+               + " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Write some text\">"
+               + "<i class=\"glyphicon glyphicon-copyright-mark\"></i>"
+               + "</label>"
+               + "<label class=\"btn btn-primary\">"
                + "<input type=\"radio\" name=\"tool_option\" id=\"text\""
                + " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Write some text\">"
                + "<i class=\"glyphicon glyphicon-font\"></i>"
@@ -88,6 +93,7 @@ MIT License
             $("body").append("<div id=\"annotate_tools\" style=\"display:inline-block\">"
                + "<button id=\"undoaction\">UNDO</button>"
                + "<input type=\"radio\" name=\"tool_option\" id=\"rectangle\" checked>RECTANGLE"
+               + "<input type=\"radio\" name=\"tool_option\" id=\"circle\">CIRCLE"
                + "<input type=\"radio\" name=\"tool_option\" id=\"text\"> TEXT"
                + "<input type=\"radio\" name=\"tool_option\" id=\"arrow\">ARROW"
                + "<input type=\"radio\" name=\"tool_option\" id=\"pen\">PEN"
@@ -219,6 +225,8 @@ MIT License
              }
             }else if (element.type === "text"){
                self.drawText(self.baseContext, element.text, element.fromx, element.fromy, element.maxwidth);
+            }else if (element.type === "circle"){
+              self.drawCircle(self.baseContext, element.fromx, element.fromy, element.tox, element.toy);
             }
          }
       },
@@ -238,6 +246,28 @@ MIT License
          context.lineWidth = self.options.linewidth;
          context.strokeStyle = self.options.color;
          context.stroke();
+      },
+
+      drawCircle: function(context, x1, y1, x2, y2){
+        var radiusX = (x2 - x1) * 0.5,
+          radiusY = (y2 - y1) * 0.5,
+          centerX = x1 + radiusX,
+          centerY = y1 + radiusY,
+          step = 0.01,
+          a = step,
+          pi2 = Math.PI * 2 - step,
+          self = this;
+
+        context.beginPath();
+        context.moveTo(centerX + radiusX * Math.cos(0), centerY + radiusY * Math.sin(0));
+
+        for(; a < pi2; a += step) {
+          context.lineTo(centerX + radiusX * Math.cos(a),
+                centerY + radiusY * Math.sin(a));
+        }
+        context.lineWidth = self.options.linewidth;
+        context.strokeStyle = self.options.color;
+        context.stroke();
       },
 
       drawArrow: function(context, x, y, w, h){
@@ -362,7 +392,11 @@ MIT License
                self.storedElement.push({type: "rectangle",
                    fromx: self.fromx, fromy: self.fromy,
                    tox: self.tox, toy: self.toy});
-            } else if (self.options.type === "arrow"){
+            } else if (self.options.type === "circle" ) {
+             self.storedElement.push({type: "circle",
+               fromx: self.fromx, fromy: self.fromy,
+               tox: self.tox, toy: self.toy});
+           } else if (self.options.type === "arrow"){
                self.storedElement.push({type: "arrow",
                    fromx: self.fromx, fromy: self.fromy,
                    tox: self.tox, toy: self.toy});
@@ -426,6 +460,11 @@ MIT License
                left: self.fromxText + 2, top: self.fromyText,
                width: self.tox - 12, height: self.toy
             });
+         }else if(self.options.type === "circle"){
+           self.clear();
+           self.tox = event.pageX - offset.left;
+           self.toy = event.pageY - offset.top;
+           self.drawCircle(self.drawingContext, self.fromx, self.fromy, self.tox, self.toy);
          }
       }
    };
