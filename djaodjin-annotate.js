@@ -267,6 +267,7 @@ MIT License
         }
         context.lineWidth = self.options.linewidth;
         context.strokeStyle = self.options.color;
+        context.closePath();
         context.stroke();
       },
 
