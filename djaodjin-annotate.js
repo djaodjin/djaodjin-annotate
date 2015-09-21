@@ -156,7 +156,7 @@ MIT License
          self.$el.on("mousedown", function(event){
             self.mousedown(event);
          });
-         self.$el.on("mouseup", function(event){
+         $(document).on("mouseup", function(event){
             self.mouseup(event);
          });
          self.$el.on("mousemove", function(event){
@@ -203,7 +203,7 @@ MIT License
          var self = this;
          self.baseCanvas.width = self.baseCanvas.width;
          if (self.options.img){
-           self.baseContext.drawImage(self.img,  0, 0, self.options.width, self.options.height);
+           self.baseContext.drawImage(self.img, 0, 0, self.options.width, self.options.height);
          }
          if (self.storedElement.length === 0) {
             return;
