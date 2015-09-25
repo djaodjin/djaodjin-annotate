@@ -156,8 +156,11 @@ MIT License
          self.$el.on("mousedown", function(event){
             self.mousedown(event);
          });
-         $(document).on("mouseup", function(event){
+         self.$el.on("mouseup", function(event){
             self.mouseup(event);
+         });
+         self.$el.on("mouseleave", function(event){
+            self.mouseleave(event);
          });
          self.$el.on("mousemove", function(event){
             self.mousemove(event);
@@ -432,6 +435,13 @@ MIT License
                    width: 100, height: 50});
             }
          }
+      },
+
+      mouseleave: function(event){
+        var self = this;
+        if (this.clicked){
+          self.mouseup(event);
+        }
       },
 
       mousemove: function(event){
