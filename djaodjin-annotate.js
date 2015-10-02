@@ -31,10 +31,13 @@ MIT License
          var self = this;
          self.$el.addClass("annotate-container");
          self.$el.css({cursor: "crosshair"});
-         self.$el.append($("<canvas id=\"baseLayer\"></canvas>"));
-         self.$el.append($("<canvas id=\"drawingLayer\"></canvas>"));
-         self.baseCanvas = document.getElementById("baseLayer");
-         self.drawingCanvas = document.getElementById("drawingLayer");
+         self.baseLayerId = "baseLayer_" + self.$el.attr("id");
+         self.drawingLayerId = "drawingLayer_" + self.$el.attr("id");
+         self.toolOptionId = "tool_option_" + self.$el.attr("id");
+         self.$el.append($("<canvas id=\"" + self.baseLayerId + "\"></canvas>"));
+         self.$el.append($("<canvas id=\"" + self.drawingLayerId + "\"></canvas>"));
+         self.baseCanvas = document.getElementById(self.baseLayerId);
+         self.drawingCanvas = document.getElementById(self.drawingLayerId);
          self.baseContext = self.baseCanvas.getContext("2d");
          self.drawingContext = self.drawingCanvas.getContext("2d");
 
@@ -50,77 +53,79 @@ MIT License
              classPosition2 = "btn-block";
          }
 
-         self.$el.css({"border": "1px solid black"});
          if (self.options.bootstrap){
-            /*jshint multistr: true */
-            $("body").append("<div id=\"annotate_tools\">"
+            self.$tool = $("<div id=\"\">"
                + "<button id=\"undoaction\" title=\"Undo the last annotation\""
-               + " class=\"btn btn-primary " + classPosition2 + "\">"
+               + " class=\"btn btn-primary " + classPosition2 + " annotate-undo\">"
                + "<i class=\"glyphicon glyphicon-arrow-left\"></i></button>"
                + "<div class=\"" + classPosition1 + "\" data-toggle=\"buttons\">"
                + "<label class=\"btn btn-primary active\">"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"rectangle\""
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\""
                + " data-toggle=\"tooltip\" data-placement=\"top\""
                + " title=\"Draw an rectangle\"><i class=\"glyphicon glyphicon-unchecked\"></i>"
                + "</label>"
                + "<label class=\"btn btn-primary\">"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"circle\""
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\""
                + " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Write some text\">"
                + "<i class=\"glyphicon glyphicon-copyright-mark\"></i>"
                + "</label>"
                + "<label class=\"btn btn-primary\">"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"text\""
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"text\""
                + " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Write some text\">"
                + "<i class=\"glyphicon glyphicon-font\"></i>"
                + "</label>"
                + "<label class=\"btn btn-primary\">"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"arrow\""
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"arrow\""
                + " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Draw an arrow\">"
                + "<i class=\"glyphicon glyphicon-arrow-up\"></i>"
                + "</label>"
                + "<label class=\"btn btn-primary\">"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"pen\""
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"pen\""
                + " data-toggle=\"tooltip\" data-placement=\"top\" title=\"Pen Tool\">"
                + "<i class=\"glyphicon glyphicon-pencil\"></i>"
                + "</label>"
                + "</div>"
                + "<button type=\"button\" id=\"redoaction\""
                + " title=\"Redo the last undone annotation\""
-               + "class=\"btn btn-primary " + classPosition2 + "\">"
+               + "class=\"btn btn-primary " + classPosition2 + " annotate-redo\">"
                + "<i class=\"glyphicon glyphicon-arrow-right\"></i></button>"
                + "</div>");
+            /*jshint multistr: true */
+            $("body").append(self.$tool);
          }else{
-            $("body").append("<div id=\"annotate_tools\" style=\"display:inline-block\">"
+            self.$tool = $("<div id=\"\" style=\"display:inline-block\">"
                + "<button id=\"undoaction\">UNDO</button>"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"rectangle\" checked>RECTANGLE"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"circle\">CIRCLE"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"text\"> TEXT"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"arrow\">ARROW"
-               + "<input type=\"radio\" name=\"tool_option\" id=\"pen\">PEN"
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" checked>RECTANGLE"
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\">CIRCLE"
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"text\"> TEXT"
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"arrow\">ARROW"
+               + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"pen\">PEN"
                + "<button id=\"redoaction\" title=\"Redo the last undone annotation\">REDO</button>"
                + "</div>");
+            $("body").append(self.$tool);
          }
          var canvasPosition = self.$el.offset();
 
          if (self.options.position === "top" || (self.options.position !== "top" && !self.options.bootstrap)){
-            $("#annotate_tools").css({"position": "absolute", "top": canvasPosition.top - 35, "left": canvasPosition.left});
+            self.$tool.css({"position": "absolute", "top": canvasPosition.top - 35, "left": canvasPosition.left});
          }else{
             if (self.options.position === "left" && self.options.bootstrap){
-               $("#annotate_tools").css({"position": "absolute", "top": canvasPosition.top - 35, "left": canvasPosition.left - 20});
+               self.$tool.css({"position": "absolute", "top": canvasPosition.top - 35, "left": canvasPosition.left - 20});
             }else if (self.options.position === "right" && self.options.bootstrap){
-               $("#annotate_tools").css({"position": "absolute", "top": canvasPosition.top - 35, "left": canvasPosition.left + self.baseCanvas.width + 20});
+               self.$tool.css({"position": "absolute", "top": canvasPosition.top - 35, "left": canvasPosition.left + self.baseCanvas.width + 20});
             }else if (self.options.position === "bottom" && self.options.bootstrap){
-               $("#annotate_tools").css({"position": "absolute", "top": canvasPosition.top + self.baseCanvas.height + 35, "left": canvasPosition.left});
+               self.$tool.css({"position": "absolute", "top": canvasPosition.top + self.baseCanvas.height + 35, "left": canvasPosition.left});
             }
          }
-
-         $("body").append("<textarea id=\"input_text\""
+         self.$textbox = $("<textarea id=\"\""
 + " style=\"position:absolute;z-index:100000;display:none;top:0;left:0;"
 + "background:transparent;border:1px dotted; line-height:25px;"
              + ";font-size:" + self.options.fontsize
              + ";font-family:sans-serif;color:" + self.options.color
              + ";word-wrap: break-word;outline-width: 0;overflow: hidden;"
 + "padding:0px\"></textarea>");
+
+         $("body").append(self.$textbox);
 
          if (self.options.img){
             self.img = new Image();
@@ -143,14 +148,14 @@ MIT License
             self.baseCanvas.height = self.drawingCanvas.height = self.options.height;
          }
 
-         $(document).on("change", "input[name=\"tool_option\"]", function(){
+         self.$tool.on("change", "input[name^=\"tool_option\"]", function(){
             self.selectTool($(this));
          });
 
-         $(document).on("click", "#redoaction", function(event){
+         self.$tool.on("click", ".annotate-redo", function(event){
             self.redoaction(event);
          });
-         $(document).on("click", "#undoaction", function(event){
+         self.$tool.on("click", ".annotate-undo", function(event){
             self.undoaction(event);
          });
          self.$el.on("mousedown", function(event){
@@ -171,14 +176,14 @@ MIT License
       checkUndoRedo: function(){
          var self = this;
          if (self.storedUndo.length === 0){
-            $("#redoaction").attr("disabled", true);
+            self.$tool.children(".annotate-redo").attr("disabled", true);
          }else{
-            $("#redoaction").attr("disabled", false);
+            self.$tool.children(".annotate-redo").attr("disabled", false);
          }
          if (self.storedElement.length === 0){
-            $("#undoaction").attr("disabled", true);
+            self.$tool.children(".annotate-undo").attr("disabled", true);
          }else{
-            $("#undoaction").attr("disabled", false);
+            self.$tool.children(".annotate-undo").attr("disabled", false);
          }
       },
 
@@ -329,10 +334,10 @@ MIT License
       // Events
       selectTool: function(element) {
          var self = this;
-         self.options.type = element.attr("id");
-         if ($("#input_text").is(":visible")){
-            var text = $("#input_text").val();
-            $("#input_text").val("").hide();
+         self.options.type = element.data("tool");
+         if (self.$textbox.is(":visible")){
+            var text = self.$textbox.val();
+            self.$textbox.val("").hide();
             if( text ) {
                self.storedElement.push({
                    type: "text",
@@ -344,6 +349,7 @@ MIT License
                   self.storedUndo = [];
                }
             }
+            self.checkUndoRedo();
             self.redraw();
          }
       },
@@ -352,14 +358,13 @@ MIT License
          var self = this;
          self.clicked = true;
          var offset = self.$el.offset();
-         if ($("#input_text").is(":visible")){
-            var text = $("#input_text").val();
-            $("#input_text").val("").hide();
+         if (self.$textbox.is(":visible")){
+            var text = self.$textbox.val();
+            self.$textbox.val("").hide();
             if (text !== "" ){
                if (!self.tox){
                   self.tox = 100;
                }
-               self.drawText(self.baseContext, text, self.fromxText - offset.left, self.fromyText - offset.top, self.tox);
                self.storedElement.push({
                      type: "text",
                      text: text,
@@ -370,6 +375,8 @@ MIT License
                   self.storedUndo = [];
                }
             }
+            self.checkUndoRedo();
+            self.redraw();
             self.clear();
          }
          self.tox = null;
@@ -381,7 +388,7 @@ MIT License
          self.fromxText = event.pageX;
          self.fromyText = event.pageY;
          if (self.options.type === "text"){
-            $("#input_text").css({
+            self.$textbox.css({
                   left: self.fromxText + 2, top: self.fromyText,
                   width: 0, height: 0}).show();
          }
@@ -407,7 +414,7 @@ MIT License
                    fromx: self.fromx, fromy: self.fromy,
                    tox: self.tox, toy: self.toy});
             } else if (self.options.type === "text" ){
-               $("#input_text").css({
+               self.$textbox.css({
                    left: self.fromxText + 2, top: self.fromyText,
                    width: self.tox - 12, height: self.toy});
             }else if (self.options.type === "pen"){
@@ -430,7 +437,7 @@ MIT License
             self.redraw();
          } else {
             if (self.options.type === "text"){
-               $("#input_text").css({
+               self.$textbox.css({
                    left: self.fromxText + 2, top: self.fromyText,
                    width: 100, height: 50});
             }
@@ -469,7 +476,7 @@ MIT License
             self.clear();
             self.tox = event.pageX - self.fromxText;
             self.toy = event.pageY - self.fromyText;
-            $("#input_text").css({
+            self.$textbox.css({
                left: self.fromxText + 2, top: self.fromyText,
                width: self.tox - 12, height: self.toy
             });
@@ -479,12 +486,29 @@ MIT License
            self.toy = event.pageY - offset.top;
            self.drawCircle(self.drawingContext, self.fromx, self.fromy, self.tox, self.toy);
          }
+      },
+
+      destroy: function(){
+        var self = this;
+        self.$tool.remove();
+        self.$textbox.remove();
+        self.$el.children("canvas").remove();
+        self.$el.removeData("annotate");
       }
    };
 
    $.fn.annotate = function(options) {
-      var opts = $.extend( {}, $.fn.annotate.defaults, options );
-      return new Annotate($(this), opts);
+      if (options === "destroy"){
+        if ($(this).data("annotate")){
+          $(this).data("annotate").destroy();
+        }else{
+          throw "No annotate initialized for: #" + $(this).attr("id");
+        }
+      }else{
+        var opts = $.extend( {}, $.fn.annotate.defaults, options );
+        var annotate = new Annotate($(this), opts);
+        $(this).data("annotate", annotate);
+      }
    };
 
    $.fn.annotate.defaults = {
