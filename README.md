@@ -6,22 +6,36 @@ a screenshot. Try the live demo on [DjaoDjin blog](https://djaodjin.com/blog/jqu
 
 #Usage
 
-Just add a div element into html.
-
+Load djaodjin-annotate.css and djaodjin-annotate.js
 ```html
-	<div id="myCanvas"></div>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8 />
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="/static/css/djaodjin-annotate.css" />
+</head>
+<body>
+
+
+	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript" src="/static/js/djaodjin-annotate.js"></script>
+</body>
+</html>
+
 ```
 
-load djaodjin-annotate.js
+Just add a div element inside ```body``.
+
 ```html
-	<script type="text/javascript" src="/static/js/djaodjin-annotate.js"></script>
+<div id="myCanvas"></div>
 ```
 
 and on a script:
 
 ```javascript
 $(document).ready(function(){
-	$('#myCanvas').annotate(options);
+	$("#myCanvas").annotate(options);
 });
 ```
 
@@ -41,9 +55,15 @@ options = {
 }
 ```
 
+Once initilaized, it can be deestoy:
+
+```javascript
+$("#myCanvas").annotate("destroy");
+```
+
 #License
 
-Copyright (c) 2014, Djaodjin Inc.
+Copyright (c) 2015, Djaodjin Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
