@@ -2,7 +2,7 @@
 	position: relative;
 }
 
-.annotate-container > #baseLayer{
+.annotate-container > [id^=baseLayer]{
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -10,7 +10,7 @@
 	background: grey;
 }
 
-.annotate-container > #drawingLayer{
+.annotate-container > [id^=drawingLayer]{
 	position: absolute;
 	top: 0;
 	left: 0;
