@@ -1,11 +1,17 @@
 {
   "name": "djaodjin-annotate",
-  "description": "Simple plugin to annotate a screenshot",
+  "description": "Simple jQuery plugin to annotate a screenshot",
+  "homepage": "https://djaodjin.com/blog/jquery-plugin-to-annotate-images.blog",
   "version": "0.0.1",
+  "main": "djaodjin-annotate.js",
   "dependencies": {
-    "jquery": ">=1.11",
-    "bootstrap": "~3.3.4"
+    "jquery": "~1.11.3",
+    "bootstrap": "~3.3.5"
   },
+  "ignore": [
+    "*.html",
+    "*.md"
+  ],
   "keywords": [
     "canvas",
     "annotate",
@@ -25,6 +31,5 @@
       "type": "MIT",
       "url": "http://opensource.org/licenses/MIT"
     }
-  ],
-  "main": "djaodjin-annotate.js"
+  ]
 }
