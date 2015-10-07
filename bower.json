@@ -11,9 +11,9 @@
   "ignore": [
     "*.html",
     "*.md",
-    "images/*",
+    "images/",
     ".gitignore",
-    "vendor/*"
+    "vendor/"
   ],
   "keywords": [
     "canvas",
