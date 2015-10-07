@@ -10,7 +10,10 @@
   },
   "ignore": [
     "*.html",
-    "*.md"
+    "*.md",
+    "images/*",
+    ".gitignore",
+    "vendor/*"
   ],
   "keywords": [
     "canvas",
