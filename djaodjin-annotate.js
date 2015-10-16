@@ -336,17 +336,23 @@ MIT License
       },
 
       drawArrow: function(context, x, y, w, h){
-         var self = this;
-         var angle = Math.atan2(h - y, w - x);
-         context.beginPath();
-         context.lineWidth = self.options.linewidth;
-         context.moveTo(x, y);
-         context.lineTo(w, h);
-         context.lineTo(w - 10 * Math.cos(angle - Math.PI / 6), h - 10 * Math.sin(angle - Math.PI / 6));
-         context.moveTo(w, h);
-         context.lineTo(w - 10 * Math.cos(angle + Math.PI / 6), h - 10 * Math.sin(angle + Math.PI / 6));
-         context.strokeStyle = self.options.color;
-         context.stroke();
+        var self = this;
+        var angle = Math.atan2(h - y, w - x);
+        context.beginPath();
+        context.lineWidth = self.options.linewidth;
+        context.moveTo(x, y);
+        context.lineTo(w, h);
+        context.moveTo(
+          w - (self.options.linewidth * 5) * Math.cos(angle + Math.PI / 6),
+          h - (self.options.linewidth * 5) * Math.sin(angle + Math.PI / 6)
+        );
+        context.lineTo(w, h);
+        context.lineTo(
+          w - (self.options.linewidth * 5) * Math.cos(angle - Math.PI / 6),
+          h - (self.options.linewidth * 5) * Math.sin(angle - Math.PI / 6)
+        );
+        context.strokeStyle = self.options.color;
+        context.stroke();
       },
 
       drawPen: function(context, fromx, fromy, tox, toy){
