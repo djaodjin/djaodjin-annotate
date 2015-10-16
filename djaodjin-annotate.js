@@ -317,7 +317,7 @@ MIT License
           radiusY = (y2 - y1) * 0.5,
           centerX = x1 + radiusX,
           centerY = y1 + radiusY,
-          step = 0.01,
+          step = 0.05,
           a = step,
           pi2 = Math.PI * 2 - step,
           self = this;
