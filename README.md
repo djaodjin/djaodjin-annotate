@@ -47,7 +47,7 @@ options = {
 	height: "400", 		// Height of canvas
 	color:"red", 		// Color for shape and text
 	type : "rectangle", // default shape: can be "rectangle", "arrow" or "text"
-	img: null,  		// Path for the image src
+	images: null,  		// Array of images path : ["images/image1.png", "images/image2.png"]
 	linewidth:2, 		// Line width for rectangle and arrow shapes
 	fontsize:"20px", 	// font size for text
 	bootstrap: true,  	// Bootstrap theme design
@@ -60,6 +60,29 @@ Once initilaized, it can be deestoy:
 ```javascript
 $("#myCanvas").annotate("destroy");
 ```
+
+If multiple images provided, an image selector is necessary to switch. Just add html to trigger a change event on ```annotate-image-select``` css class. Value must return a image path. ex:
+
+```html
+<label>
+	<input type="radio" name="image-selector" class="annotate-image-select" value="images/image1.jpg" checked>
+	<img src="images/test.jpg" width="35" height="35">
+</label>
+<label>
+	<input type="radio" name="image-selector" class="annotate-image-select" value="images/image2.png">
+	<img src="images/image2.png" width="35" height="35">
+</label>
+<label>
+	<input type="radio" name="image-selector" class="annotate-image-select" value="images/image3.png">
+	<img src="images/image3.png" width="35" height="35">
+</label>
+```
+
+#Release notes
+
+###v0.0.1
+
+- bower release
 
 #License
 
