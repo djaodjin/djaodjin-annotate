@@ -22,7 +22,11 @@ MIT License
       this.points = [];
       this.storedUndo = [];
       this.storedElement = [];
+      this.images = [];
       this.img = null;
+      this.selectedImage = null;
+      this.currentWidth = null;
+      this.currentHeight = null;
       this.init();
    }
 
@@ -127,18 +131,8 @@ MIT License
 
          $("body").append(self.$textbox);
 
-         if (self.options.img){
-            self.img = new Image();
-            self.img.src = self.options.img;
-            self.img.onload = function () {
-               if (!(self.options.width && self.options.height)){
-                  self.options.width = this.width;
-                  self.options.height = this.height;
-               }
-               self.baseCanvas.width = self.drawingCanvas.width = self.options.width;
-               self.baseCanvas.height = self.drawingCanvas.height = self.options.height;
-               self.baseContext.drawImage(self.img, 0, 0, self.options.width, self.options.height);
-            };
+         if (self.options.images){
+            self.initBackgroundImages();
          }else{
             if (!self.options.width && !self.options.height){
                self.options.width = 640;
@@ -158,6 +152,11 @@ MIT License
          self.$tool.on("click", ".annotate-undo", function(event){
             self.undoaction(event);
          });
+         $(".annotate-image-select").on("change", function(event){
+          event.preventDefault();
+          var image = self.selectBackgroundImage($(this).val());
+          self.setBackgroundImage(image);
+         });
          self.$el.on("mousedown", function(event){
             self.mousedown(event);
          });
@@ -171,6 +170,63 @@ MIT License
             self.mousemove(event);
          });
          self.checkUndoRedo();
+      },
+
+      initBackgroundImages: function(){
+        var self = this;
+        $.each(self.options.images, function(index, element){
+          var image = {
+            path: element,
+            storedUndo: [],
+            storedElement: []
+          };
+          self.images.push(image);
+          if (index === 0){
+            self.setBackgroundImage(image);
+          }
+        });
+      },
+
+      selectBackgroundImage: function(src){
+        var self = this;
+        var image = $.grep(self.images, function(element){
+          return element.path === src;
+        })[0];
+        return image;
+      },
+
+      setBackgroundImage: function(image){
+        var self = this;
+        var currentImage = self.selectBackgroundImage(self.selectedImage);
+        if (currentImage){
+          currentImage.storedElement = self.storedElement;
+          currentImage.storedUndo = self.storedUndo;
+        }
+        self.img = new Image();
+        self.img.src = image.path;
+        self.img.onload = function () {
+          if (!(self.options.width && self.options.height)){
+            self.currentWidth = this.width;
+            self.currentHeight = this.height;
+          }else{
+            self.currentWidth = self.options.width;
+            self.currentHeight = self.options.height;
+          }
+          self.baseCanvas.width = self.drawingCanvas.width = self.currentWidth;
+          self.baseCanvas.height = self.drawingCanvas.height = self.currentHeight;
+          self.baseContext.drawImage(self.img, 0, 0, self.currentWidth, self.currentHeight);
+
+          self.$el.css({
+            height: self.currentHeight,
+            width: self.currentWidth
+          });
+          self.storedElement = image.storedElement;
+          self.storedUndo = image.storedUndo;
+          self.selectedImage = image.path;
+          self.checkUndoRedo();
+          self.clear();
+          self.redraw();
+        };
       },
 
       checkUndoRedo: function(){
@@ -210,8 +266,8 @@ MIT License
       redraw: function(){
          var self = this;
          self.baseCanvas.width = self.baseCanvas.width;
-         if (self.options.img){
-           self.baseContext.drawImage(self.img, 0, 0, self.options.width, self.options.height);
+         if (self.options.images){
+           self.baseContext.drawImage(self.img, 0, 0, self.currentWidth, self.currentHeight);
          }
          if (self.storedElement.length === 0) {
             return;
@@ -261,7 +317,7 @@ MIT License
           radiusY = (y2 - y1) * 0.5,
           centerX = x1 + radiusX,
           centerY = y1 + radiusY,
-          step = 0.01,
+          step = 0.05,
           a = step,
           pi2 = Math.PI * 2 - step,
           self = this;
@@ -280,17 +336,23 @@ MIT License
       },
 
       drawArrow: function(context, x, y, w, h){
-         var self = this;
-         var angle = Math.atan2(h - y, w - x);
-         context.beginPath();
-         context.lineWidth = self.options.linewidth;
-         context.moveTo(x, y);
-         context.lineTo(w, h);
-         context.lineTo(w - 10 * Math.cos(angle - Math.PI / 6), h - 10 * Math.sin(angle - Math.PI / 6));
-         context.moveTo(w, h);
-         context.lineTo(w - 10 * Math.cos(angle + Math.PI / 6), h - 10 * Math.sin(angle + Math.PI / 6));
-         context.strokeStyle = self.options.color;
-         context.stroke();
+        var self = this;
+        var angle = Math.atan2(h - y, w - x);
+        context.beginPath();
+        context.lineWidth = self.options.linewidth;
+        context.moveTo(x, y);
+        context.lineTo(w, h);
+        context.moveTo(
+          w - (self.options.linewidth * 5) * Math.cos(angle + Math.PI / 6),
+          h - (self.options.linewidth * 5) * Math.sin(angle + Math.PI / 6)
+        );
+        context.lineTo(w, h);
+        context.lineTo(
+          w - (self.options.linewidth * 5) * Math.cos(angle - Math.PI / 6),
+          h - (self.options.linewidth * 5) * Math.sin(angle - Math.PI / 6)
+        );
+        context.strokeStyle = self.options.color;
+        context.stroke();
       },
 
       drawPen: function(context, fromx, fromy, tox, toy){
@@ -514,7 +576,7 @@ MIT License
    $.fn.annotate.defaults = {
       width: null,
       height: null,
-      img: null,
+      images: null,
       color: "red",
       type: "rectangle",
       linewidth: 2,
