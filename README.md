@@ -22,7 +22,6 @@ Load djaodjin-annotate.css and djaodjin-annotate.js
 	<script type="text/javascript" src="/static/js/djaodjin-annotate.js"></script>
 </body>
 </html>
-
 ```
 
 Just add a div element inside ```body``.
@@ -51,32 +50,37 @@ options = {
 	linewidth:2, 		// Line width for rectangle and arrow shapes
 	fontsize:"20px", 	// font size for text
 	bootstrap: true,  	// Bootstrap theme design
-	position: "top"		// Poistion of toolbar (available only with bootstrap)
+	position: "top"		// Position of toolbar (available only with bootstrap)
 }
 ```
 
-Once initilaized, it can be deestoy:
+### Destroy an annotate
+Once initialized, it can be destroy:
 
 ```javascript
 $("#myCanvas").annotate("destroy");
 ```
 
-If multiple images provided, an image selector is necessary to switch. Just add html to trigger a change event on ```annotate-image-select``` css class. Value must return a image path. ex:
+### Add image to existing annotate
+It's also possible to provide new images by pushing them:
 
-```html
-<label>
-	<input type="radio" name="image-selector" class="annotate-image-select" value="images/image1.jpg" checked>
-	<img src="images/test.jpg" width="35" height="35">
-</label>
-<label>
-	<input type="radio" name="image-selector" class="annotate-image-select" value="images/image2.png">
-	<img src="images/image2.png" width="35" height="35">
-</label>
-<label>
-	<input type="radio" name="image-selector" class="annotate-image-select" value="images/image3.png">
-	<img src="images/image3.png" width="35" height="35">
-</label>
+```javascript
+$("#myCanvas").annotate("push", "images/test_2.jpg");
 ```
+
+### Events
+
+* ```annotate-image-added```: Fired when images provided in option are initialized or when a new image is pushed. Can be used to build image selector.
+
+ex:
+
+```javascript
+	$('#myCanvas').on("annotate-image-added", function(event, path){
+		$(".my-image-selector").append("<label><input type=\"radio\" name=\"image-selector\" class=\"annotate-image-select\" value=\"" + path + "\" checked><img src=\"" + path + "\" width=\"35\" height=\"35\"></label>");
+	});
+```
+
+If multiple images provided, an image selector is necessary to switch. Image selector must trigger a ```change``` event on ```annotate-image-select``` class.
 
 #Release notes
 
