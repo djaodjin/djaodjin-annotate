@@ -84,6 +84,12 @@ If multiple images provided, an image selector is necessary to switch. Image sel
 
 #Release notes
 
+###v0.0.2
+
+- Ability to destroy an annotate instance
+- work with multiple images
+- Ability add new image after initialization
+
 ###v0.0.1
 
 - bower release
