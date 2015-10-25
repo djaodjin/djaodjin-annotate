@@ -8,23 +8,31 @@
 <link rel="stylesheet" type="text/css" href="vendor/bootstrap/dist/css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="css/annotate.css">
 <body>
-	
-	<div style="height:50px;">
-		
+	<div class="my-image-selector">
+	<button class="push-new-image">Push a new image!</button>
+
 	</div>
 
-	<div id="myCanvas"></div>
-
+	<div style="margin-top:50px">
+		<div id="myCanvas" style="position:relative"></div>
+	</div>
 	<script type="text/javascript" src="vendor/jquery.min.js"></script>
 	<script type="text/javascript" src="djaodjin-annotate.js"></script>
 	<script type="text/javascript" src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script>
 		$(document).ready(function(){
+			$('#myCanvas').on("annotate-image-added", function(event, path){
+				$(".my-image-selector").append("<label><input type=\"radio\" name=\"image-selector\" class=\"annotate-image-select\" value=\"" + path + "\" checked><img src=\"" + path + "\" width=\"35\" height=\"35\"></label>");
+			});
 			$('#myCanvas').annotate({
 				color: 'blue',
 				bootstrap: true,
-				images: ['images/test.jpg']})
-		})
+				images: ['images/test.jpg']});
+
+			$(".push-new-image").click(function(event) {
+				$('#myCanvas').annotate("push", "images/test_2.jpg");
+			});
+		});
 	</script>
 </body>
 </html>

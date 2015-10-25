@@ -172,18 +172,37 @@ MIT License
          self.checkUndoRedo();
       },
 
-      initBackgroundImages: function(){
+      pushImage: function(path, set){
         var self = this;
-        $.each(self.options.images, function(index, element){
+        if (!self.selectBackgroundImage(path)){
           var image = {
-            path: element,
+            path: path,
             storedUndo: [],
             storedElement: []
           };
           self.images.push(image);
-          if (index === 0){
+          if (set){
             self.setBackgroundImage(image);
           }
+          self.$el.trigger("annotate-image-added", [path]);
+          $(".annotate-image-select").on("change", function(event){
+            event.preventDefault();
+            var selected = self.selectBackgroundImage($(this).val());
+            self.setBackgroundImage(selected);
+          });
+        }else{
+          console.log("Image already registered!");
+        }
+      },
+
+      initBackgroundImages: function(){
+        var self = this;
+        $.each(self.options.images, function(index, image){
+          var set = false;
+          if (index === 0){
+            set = true;
+          }
+          self.pushImage(image, set);
         });
       },
 
@@ -197,6 +216,9 @@ MIT License
 
       setBackgroundImage: function(image){
         var self = this;
+        if (self.$textbox.is(":visible")){
+            self.pushText();
+         }
         var currentImage = self.selectBackgroundImage(self.selectedImage);
         if (currentImage){
           currentImage.storedElement = self.storedElement;
@@ -393,26 +415,31 @@ MIT License
          self.wrapText(context, text, x + 3, y + 4, maxWidth, 25);
       },
 
+      pushText: function(){
+        var self = this;
+        var text = self.$textbox.val();
+        self.$textbox.val("").hide();
+        if( text ) {
+           self.storedElement.push({
+               type: "text",
+               text: text,
+               fromx: self.fromx,
+               fromy: self.fromy,
+               maxwidth: self.tox});
+           if (self.storedUndo.length > 0){
+              self.storedUndo = [];
+           }
+        }
+        self.checkUndoRedo();
+        self.redraw();
+      },
+
       // Events
       selectTool: function(element) {
          var self = this;
          self.options.type = element.data("tool");
          if (self.$textbox.is(":visible")){
-            var text = self.$textbox.val();
-            self.$textbox.val("").hide();
-            if( text ) {
-               self.storedElement.push({
-                   type: "text",
-                   text: text,
-                   fromx: self.fromx,
-                   fromy: self.fromy,
-                   maxwidth: self.tox});
-               if (self.storedUndo.length > 0){
-                  self.storedUndo = [];
-               }
-            }
-            self.checkUndoRedo();
-            self.redraw();
+            self.pushText();
          }
       },
 
@@ -559,10 +586,16 @@ MIT License
       }
    };
 
-   $.fn.annotate = function(options) {
+   $.fn.annotate = function(options, path) {
       if (options === "destroy"){
         if ($(this).data("annotate")){
           $(this).data("annotate").destroy();
+        }else{
+          throw "No annotate initialized for: #" + $(this).attr("id");
+        }
+      }else if (options === "push"){
+        if ($(this).data("annotate")){
+          $(this).data("annotate").pushImage(path, true);
         }else{
           throw "No annotate initialized for: #" + $(this).attr("id");
         }
