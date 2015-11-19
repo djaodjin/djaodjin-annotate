@@ -1,5 +1,5 @@
 /*
-djaodjin-annotate.js v0.0.1
+djaodjin-annotate.js v0.0.2
 Copyright (c) 2015, Djaodjin Inc.
 MIT License
 */
@@ -152,9 +152,9 @@ MIT License
          self.$tool.on("click", ".annotate-undo", function(event){
             self.undoaction(event);
          });
-         $(".annotate-image-select").on("change", function(event){
+         $(document).on(self.options.selectEvent, ".annotate-image-select", function(event){
           event.preventDefault();
-          var image = self.selectBackgroundImage($(this).val());
+          var image = self.selectBackgroundImage($(this).data("path"));
           self.setBackgroundImage(image);
          });
          self.$el.on("mousedown", function(event){
@@ -185,11 +185,6 @@ MIT License
             self.setBackgroundImage(image);
           }
           self.$el.trigger("annotate-image-added", [path]);
-          $(".annotate-image-select").on("change", function(event){
-            event.preventDefault();
-            var selected = self.selectBackgroundImage($(this).val());
-            self.setBackgroundImage(selected);
-          });
         }else{
           console.log("Image already registered!");
         }
@@ -615,7 +610,8 @@ MIT License
       linewidth: 2,
       fontsize: "20px",
       bootstrap: false,
-      position: "top"
+      position: "top",
+      selectEvent: "change"
    };
 
 })(jQuery);
