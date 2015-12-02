@@ -21,8 +21,9 @@
 	<script type="text/javascript" src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script>
 		$(document).ready(function(){
-			$('#myCanvas').on("annotate-image-added", function(event, path){
-				$(".my-image-selector").append("<label><input type=\"radio\" name=\"image-selector\" class=\"annotate-image-select\" value=\"" + path + "\" checked data-path=\"" + path + "\"><img src=\"" + path + "\" width=\"35\" height=\"35\"></label>");
+			var counter = 0;
+			$('#myCanvas').on("annotate-image-added", function(event, id, path){
+				$(".my-image-selector").append("<label><input type=\"radio\" name=\"image-selector\" class=\"annotate-image-select\" value=\"" + path + "\" checked id=\"" + id + "\"><img src=\"" + path + "\" width=\"35\" height=\"35\"></label>");
 			});
 			$('#myCanvas').annotate({
 				color: 'blue',
@@ -30,7 +31,12 @@
 				images: ['images/test.jpg']});
 
 			$(".push-new-image").click(function(event) {
-				$('#myCanvas').annotate("push", "images/test_2.jpg");
+				if (counter === 0){
+					$('#myCanvas').annotate("push", "images/test_2.jpg");
+					counter += 1;
+				}else{
+					$('#myCanvas').annotate("push", {id:"unique_identifier", path:"images/test.jpg"});
+				}
 			});
 		});
 	</script>
