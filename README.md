@@ -42,15 +42,17 @@ customizable options:
 
 ```javascript
 options = {
-	width: "640", 		// Width of canvas
-	height: "400", 		// Height of canvas
-	color:"red", 		// Color for shape and text
-	type : "rectangle", // default shape: can be "rectangle", "arrow" or "text"
-	images: null,  		// Array of images path : ["images/image1.png", "images/image2.png"]
-	linewidth:2, 		// Line width for rectangle and arrow shapes
-	fontsize:"20px", 	// font size for text
-	bootstrap: true,  	// Bootstrap theme design
-	position: "top"		// Position of toolbar (available only with bootstrap)
+	width: "640",			// Width of canvas
+	height: "400",			// Height of canvas
+	color:"red", 			// Color for shape and text
+	type : "rectangle",		// default shape: can be "rectangle", "arrow" or "text"
+	images: null,			// Array of images path : ["images/image1.png", "images/image2.png"]
+	linewidth:2,			// Line width for rectangle and arrow shapes
+	fontsize:"20px",		// font size for text
+	bootstrap: true,		// Bootstrap theme design
+	position: "top",		// Position of toolbar (available only with bootstrap)
+	idAttribute: "id",		// Attribute to select image id.
+	selectEvent: "change"	// listened event to select image
 }
 ```
 
@@ -64,23 +66,31 @@ $("#myCanvas").annotate("destroy");
 ### Add image to existing annotate
 It's also possible to provide new images by pushing them:
 
+- Push an image with only path: (If image exists an id will be automatically created.)
 ```javascript
 $("#myCanvas").annotate("push", "images/test_2.jpg");
 ```
 
+
+- Push an image with and id and a path: (allow to build an image selector manually)
+
+```javascript
+$("#myCanvas").annotate("push", {id:"unique_identifier", path: "images/test_2.jpg"});
+```
+
 ### Events
 
-* ```annotate-image-added```: Fired when images provided in option are initialized or when a new image is pushed. Can be used to build image selector.
+* ```annotate-image-added```: Fired when an image is initialized (plugin initialization or when a new image is pushed). Can be used to build image selector.
 
 ex:
 
 ```javascript
-	$('#myCanvas').on("annotate-image-added", function(event, path){
-		$(".my-image-selector").append("<label><input type=\"radio\" name=\"image-selector\" class=\"annotate-image-select\" value=\"" + path + "\" checked><img src=\"" + path + "\" width=\"35\" height=\"35\"></label>");
+	$('#myCanvas').on("annotate-image-added", function(event, id, path){
+		$(".my-image-selector").append("<label><input type=\"radio\" name=\"image-selector\" class=\"annotate-image-select\" id=\"" + id + "\" checked><img src=\"" + path + "\" width=\"35\" height=\"35\"></label>");
 	});
 ```
 
-If multiple images provided, an image selector is necessary to switch. Image selector must trigger a ```change``` event on ```annotate-image-select``` class.
+If multiple images provided, an image selector is necessary to switch. Image selector must trigger an event on ```annotate-image-select``` class. you can custom the event by using ```selectEvent``` option (default: ```change```) and custom the readable image attribute by using ```idAttribute``` option (default: ```id```)
 
 #Release notes
 

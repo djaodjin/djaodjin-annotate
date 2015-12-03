@@ -154,7 +154,7 @@ MIT License
          });
          $(document).on(self.options.selectEvent, ".annotate-image-select", function(event){
           event.preventDefault();
-          var image = self.selectBackgroundImage($(this).data("path"));
+          var image = self.selectBackgroundImage($(this).attr(self.options.idAttribute));
           self.setBackgroundImage(image);
          });
          self.$el.on("mousedown", function(event){
@@ -172,22 +172,46 @@ MIT License
          self.checkUndoRedo();
       },
 
-      pushImage: function(path, set){
-        var self = this;
-        if (!self.selectBackgroundImage(path)){
-          var image = {
-            path: path,
-            storedUndo: [],
-            storedElement: []
-          };
-          self.images.push(image);
-          if (set){
-            self.setBackgroundImage(image);
-          }
-          self.$el.trigger("annotate-image-added", [path]);
-        }else{
-          console.log("Image already registered!");
+      generateId: function(length){
+        var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+        var id = "";
+        for (var i = 0; i < length; i++) {
+          var rnum = Math.floor(Math.random() * chars.length);
+          id += chars.substring(rnum, rnum + 1);
         }
+        return id;
+      },
+
+      pushImage: function(newImage, set){
+        var self = this;
+        var id = null;
+        var path = null;
+        if (typeof newImage === "object"){
+          id = newImage.id;
+          path = newImage.path;
+        }else{
+          id = newImage;
+          path = newImage;
+        }
+
+        if (id === "" || typeof id === "undefined" || self.selectBackgroundImage(id)){
+          id = self.generateId(10);
+          while (self.selectBackgroundImage(id)){
+            id = self.generateId(10);
+          }
+        }
+
+        var image = {
+          id: id,
+          path: path,
+          storedUndo: [],
+          storedElement: []
+        };
+        self.images.push(image);
+        if (set){
+          self.setBackgroundImage(image);
+        }
+        self.$el.trigger("annotate-image-added", [image.id, image.path]);
       },
 
       initBackgroundImages: function(){
@@ -201,10 +225,10 @@ MIT License
         });
       },
 
-      selectBackgroundImage: function(src){
+      selectBackgroundImage: function(id){
         var self = this;
         var image = $.grep(self.images, function(element){
-          return element.path === src;
+          return element.id === id;
         })[0];
         return image;
       },
@@ -213,12 +237,14 @@ MIT License
         var self = this;
         if (self.$textbox.is(":visible")){
             self.pushText();
-         }
+        }
         var currentImage = self.selectBackgroundImage(self.selectedImage);
+
         if (currentImage){
           currentImage.storedElement = self.storedElement;
           currentImage.storedUndo = self.storedUndo;
         }
+
         self.img = new Image();
         self.img.src = image.path;
         self.img.onload = function () {
@@ -237,9 +263,11 @@ MIT License
             height: self.currentHeight,
             width: self.currentWidth
           });
+
           self.storedElement = image.storedElement;
           self.storedUndo = image.storedUndo;
-          self.selectedImage = image.path;
+          self.selectedImage = image.id;
+
           self.checkUndoRedo();
           self.clear();
           self.redraw();
@@ -581,7 +609,7 @@ MIT License
       }
    };
 
-   $.fn.annotate = function(options, path) {
+   $.fn.annotate = function(options, newImage) {
       if (options === "destroy"){
         if ($(this).data("annotate")){
           $(this).data("annotate").destroy();
@@ -590,7 +618,7 @@ MIT License
         }
       }else if (options === "push"){
         if ($(this).data("annotate")){
-          $(this).data("annotate").pushImage(path, true);
+          $(this).data("annotate").pushImage(newImage, true);
         }else{
           throw "No annotate initialized for: #" + $(this).attr("id");
         }
@@ -611,6 +639,7 @@ MIT License
       fontsize: "20px",
       bootstrap: false,
       position: "top",
+      idAttribute: "id",
       selectEvent: "change"
    };
 
