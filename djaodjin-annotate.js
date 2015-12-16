@@ -157,17 +157,19 @@ MIT License
           var image = self.selectBackgroundImage($(this).attr(self.options.idAttribute));
           self.setBackgroundImage(image);
          });
-         self.$el.on("mousedown", function(event){
-            self.mousedown(event);
+         self.$el.on("mousedown touchstart", function(event){
+            self.annotatestart(event);
          });
-         self.$el.on("mouseup", function(event){
-            self.mouseup(event);
+         self.$el.on("mouseup touchend", function(event){
+            self.annotatestop(event);
          });
-         self.$el.on("mouseleave", function(event){
-            self.mouseleave(event);
+
+         // https://developer.mozilla.org/en-US/docs/Web/Events/touchleave
+         self.$el.on("mouseleave touchleave", function(event){
+            self.annotateleave(event);
          });
-         self.$el.on("mousemove", function(event){
-            self.mousemove(event);
+         self.$el.on("mousemove touchmove", function(event){
+            self.annotatemove(event);
          });
          self.checkUndoRedo();
       },
@@ -466,7 +468,7 @@ MIT License
          }
       },
 
-      mousedown: function(event){
+      annotatestart: function(event){
          var self = this;
          self.clicked = true;
          var offset = self.$el.offset();
@@ -495,10 +497,20 @@ MIT License
          self.toy = null;
          self.points = [];
 
-         self.fromx = event.pageX - offset.left;
-         self.fromy = event.pageY - offset.top;
-         self.fromxText = event.pageX;
-         self.fromyText = event.pageY;
+
+         var pageX = event.pageX;
+         var pageY = event.pageY;
+         if (!pageX){
+          pageX = event.originalEvent.touches[0].pageX;
+         }
+         if (!pageY){
+          pageY = event.originalEvent.touches[0].pageY;
+         }
+
+         self.fromx = pageX - offset.left;
+         self.fromy = pageY - offset.top;
+         self.fromxText = pageX;
+         self.fromyText = pageY;
          if (self.options.type === "text"){
             self.$textbox.css({
                   left: self.fromxText + 2, top: self.fromyText,
@@ -509,7 +521,7 @@ MIT License
          }
       },
 
-      mouseup: function(){
+      annotatestop: function(){
           var self = this;
          this.clicked = false;
          if( self.toy !== null && self.tox !== null ) {
@@ -556,46 +568,56 @@ MIT License
          }
       },
 
-      mouseleave: function(event){
+      annotateleave: function(event){
         var self = this;
-        if (this.clicked){
-          self.mouseup(event);
+        if (self.clicked){
+          self.annotatestop(event);
         }
       },
 
-      mousemove: function(event){
+      annotatemove: function(event){
          var self = this;
+         event.preventDefault();
          if (!self.clicked) { return; }
          var offset = self.$el.offset();
+         var pageX = event.pageX;
+         var pageY = event.pageY;
+         if (!pageX){
+          pageX = event.originalEvent.touches[0].pageX;
+         }
+         if (!pageY){
+          pageY = event.originalEvent.touches[0].pageY;
+         }
+
          if (self.options.type === "rectangle"){
             self.clear();
-            self.tox = event.pageX - offset.left - self.fromx;
-            self.toy = event.pageY - offset.top - self.fromy;
+            self.tox = pageX - offset.left - self.fromx;
+            self.toy = pageY - offset.top - self.fromy;
             self.drawRectangle(self.drawingContext, self.fromx, self.fromy, self.tox, self.toy);
          }else if (self.options.type === "arrow"){
             self.clear();
-            self.tox = event.pageX - offset.left;
-            self.toy = event.pageY - offset.top;
+            self.tox = pageX - offset.left;
+            self.toy = pageY - offset.top;
             self.drawArrow(self.drawingContext, self.fromx, self.fromy, self.tox, self.toy);
          }else if (self.options.type === "pen"){
-            self.tox = event.pageX - offset.left;
-            self.toy = event.pageY - offset.top;
+            self.tox = pageX - offset.left;
+            self.toy = pageY - offset.top;
             self.fromx = self.points[self.points.length - 1][0];
             self.fromy = self.points[self.points.length - 1][1];
             self.points.push([self.tox, self.toy]);
             self.drawPen(self.drawingContext, self.fromx, self.fromy, self.tox, self.toy);
          }else if (self.options.type === "text"){
             self.clear();
-            self.tox = event.pageX - self.fromxText;
-            self.toy = event.pageY - self.fromyText;
+            self.tox = pageX - self.fromxText;
+            self.toy = pageY - self.fromyText;
             self.$textbox.css({
                left: self.fromxText + 2, top: self.fromyText,
                width: self.tox - 12, height: self.toy
             });
          }else if(self.options.type === "circle"){
            self.clear();
-           self.tox = event.pageX - offset.left;
-           self.toy = event.pageY - offset.top;
+           self.tox = pageX - offset.left;
+           self.toy = pageY - offset.top;
            self.drawCircle(self.drawingContext, self.fromx, self.fromy, self.tox, self.toy);
          }
       },
