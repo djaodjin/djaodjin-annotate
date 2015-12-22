@@ -58,12 +58,21 @@ MIT License
       }
 
       if (self.options.bootstrap){
-        self.$tool = $("<div id=\"\">"
+        self.$tool = "<div id=\"\">"
           + "<button id=\"undoaction\" title=\"Undo the last annotation\""
           + " class=\"btn btn-primary " + classPosition2 + " annotate-undo\">"
           + "<i class=\"glyphicon glyphicon-arrow-left\"></i></button>"
-          + "<div class=\"" + classPosition1 + "\" data-toggle=\"buttons\">"
-          + "<label class=\"btn btn-primary active\">"
+          + "<div class=\"" + classPosition1 + "\" data-toggle=\"buttons\">";
+
+        if (self.options.unselectTool){
+          self.$tool += "<label class=\"btn btn-danger active\">"
+            + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"null\""
+            + " data-toggle=\"tooltip\" data-placement=\"top\""
+            + " title=\"No tool selected\"><i class=\"glyphicon glyphicon-ban-circle\"></i>"
+            + "</label>";
+        }
+
+        self.$tool += "<label class=\"btn btn-primary active\">"
           + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\""
           + " data-toggle=\"tooltip\" data-placement=\"top\""
           + " title=\"Draw an rectangle\"><i class=\"glyphicon glyphicon-unchecked\"></i>"
@@ -93,21 +102,25 @@ MIT License
           + " title=\"Redo the last undone annotation\""
           + "class=\"btn btn-primary " + classPosition2 + " annotate-redo\">"
           + "<i class=\"glyphicon glyphicon-arrow-right\"></i></button>"
-          + "</div>");
-        /*jshint multistr: true */
-        $("body").append(self.$tool);
+          + "</div>";
       }else{
-        self.$tool = $("<div id=\"\" style=\"display:inline-block\">"
-          + "<button id=\"undoaction\">UNDO</button>"
-          + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" checked>RECTANGLE"
+        self.$tool = "<div id=\"\" style=\"display:inline-block\">"
+          + "<button id=\"undoaction\">UNDO</button>";
+
+        if (self.options.unselectTool){
+          self.$tool += "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"null\">NO TOOL SELECTED";
+        }
+
+        self.$tool += "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"rectangle\" checked>RECTANGLE"
           + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"circle\">CIRCLE"
           + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"text\"> TEXT"
           + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"arrow\">ARROW"
           + "<input type=\"radio\" name=\"" + self.toolOptionId + "\" data-tool=\"pen\">PEN"
           + "<button id=\"redoaction\" title=\"Redo the last undone annotation\">REDO</button>"
-          + "</div>");
-        $("body").append(self.$tool);
+          + "</div>";
       }
+      self.$tool = $(self.$tool);
+      $("body").append(self.$tool);
       var canvasPosition = self.$el.offset();
 
       if (self.options.position === "top"
@@ -162,6 +175,8 @@ MIT License
       self.$tool.on("change", "input[name^=\"tool_option\"]", function(){
         self.selectTool($(this));
       });
+
+      $("[data-tool=\"" + self.options.type + "\"").trigger("click");
 
       self.$tool.on("click", ".annotate-redo", function(event){
         self.redoaction(event);
@@ -637,7 +652,9 @@ MIT License
 
     annotatemove: function(event){
       var self = this;
-      event.preventDefault();
+      if (self.options.type){
+        event.preventDefault();
+      }
       if (!self.clicked) { return; }
       var offset = self.$el.offset();
       var pageX = event.pageX;
@@ -744,7 +761,8 @@ MIT License
     bootstrap: false,
     position: "top",
     idAttribute: "id",
-    selectEvent: "change"
+    selectEvent: "change",
+    unselectTool: false
   };
 
 })(jQuery);
