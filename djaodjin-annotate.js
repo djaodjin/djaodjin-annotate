@@ -4,7 +4,7 @@ Copyright (c) 2015, Djaodjin Inc.
 MIT License
 */
 
-/*global document jQuery Image:true*/
+/*global document jQuery Image window:true*/
 
 (function ($) {
    "use strict";
@@ -27,12 +27,18 @@ MIT License
       this.selectedImage = null;
       this.currentWidth = null;
       this.currentHeight = null;
+      this.selectImageSize = {};
+      this.compensationWidthRate = 1;
+      this.linewidth = 1;
+      this.fontsize = 1;
       this.init();
    }
 
   Annotate.prototype = {
     init: function () {
       var self = this;
+      self.linewidth = self.options.linewidth;
+      self.fontsize = self.options.fontsize;
       self.$el.addClass("annotate-container");
       self.$el.css({cursor: "crosshair"});
       self.baseLayerId = "baseLayer_" + self.$el.attr("id");
@@ -154,7 +160,7 @@ MIT License
       self.$textbox = $("<textarea id=\"\""
         + " style=\"position:absolute;z-index:100000;display:none;top:0;left:0;"
         + "background:transparent;border:1px dotted; line-height:25px;"
-        + ";font-size:" + self.options.fontsize
+        + ";font-size:" + self.fontsize
         + ";font-family:sans-serif;color:" + self.options.color
         + ";word-wrap: break-word;outline-width: 0;overflow: hidden;"
         + "padding:0px\"></textarea>");
@@ -193,23 +199,26 @@ MIT License
         self.setBackgroundImage(image);
       });
 
-      self.$el.on("mousedown touchstart", function(event){
+      $("#" + self.drawingLayerId).on("mousedown touchstart", function(event){
         self.annotatestart(event);
       });
 
-      self.$el.on("mouseup touchend", function(event){
+      $("#" + self.drawingLayerId).on("mouseup touchend", function(event){
         self.annotatestop(event);
       });
 
       // https://developer.mozilla.org/en-US/docs/Web/Events/touchleave
-      self.$el.on("mouseleave touchleave", function(event){
+      $("#" + self.drawingLayerId).on("mouseleave touchleave", function(event){
         self.annotateleave(event);
       });
 
-      self.$el.on("mousemove touchmove", function(event){
+      $("#" + self.drawingLayerId).on("mousemove touchmove", function(event){
         self.annotatemove(event);
       });
 
+      $(window).on("resize", function(event){
+        self.annotateresize();
+      });
       self.checkUndoRedo();
     },
 
@@ -293,6 +302,8 @@ MIT License
         if (!(self.options.width && self.options.height)){
           self.currentWidth = this.width;
           self.currentHeight = this.height;
+          self.selectImageSize.width = this.width;
+          self.selectImageSize.height = this.height;
         }else{
           self.currentWidth = self.options.width;
           self.currentHeight = self.options.height;
@@ -314,6 +325,7 @@ MIT License
         self.checkUndoRedo();
         self.clear();
         self.redraw();
+        self.annotateresize();
       };
     },
 
@@ -420,7 +432,7 @@ MIT License
       context.rect(x, y, w, h);
       context.fillStyle = "transparent";
       context.fill();
-      context.lineWidth = self.options.linewidth;
+      context.lineWidth = self.linewidth;
       context.strokeStyle = self.options.color;
       context.stroke();
     },
@@ -445,7 +457,7 @@ MIT License
           centerX + radiusX * Math.cos(a),
           centerY + radiusY * Math.sin(a));
       }
-      context.lineWidth = self.options.linewidth;
+      context.lineWidth = self.linewidth;
       context.strokeStyle = self.options.color;
       context.closePath();
       context.stroke();
@@ -455,17 +467,17 @@ MIT License
       var self = this;
       var angle = Math.atan2(h - y, w - x);
       context.beginPath();
-      context.lineWidth = self.options.linewidth;
+      context.lineWidth = self.linewidth;
       context.moveTo(x, y);
       context.lineTo(w, h);
       context.moveTo(
-        w - (self.options.linewidth * 5) * Math.cos(angle + Math.PI / 6),
-        h - (self.options.linewidth * 5) * Math.sin(angle + Math.PI / 6)
+        w - (self.linewidth * 5) * Math.cos(angle + Math.PI / 6),
+        h - (self.linewidth * 5) * Math.sin(angle + Math.PI / 6)
       );
       context.lineTo(w, h);
       context.lineTo(
-        w - (self.options.linewidth * 5) * Math.cos(angle - Math.PI / 6),
-        h - (self.options.linewidth * 5) * Math.sin(angle - Math.PI / 6)
+        w - (self.linewidth * 5) * Math.cos(angle - Math.PI / 6),
+        h - (self.linewidth * 5) * Math.sin(angle - Math.PI / 6)
       );
       context.strokeStyle = self.options.color;
       context.stroke();
@@ -473,7 +485,7 @@ MIT License
 
     drawPen: function(context, fromx, fromy, tox, toy){
       var self = this;
-      context.lineWidth = self.options.linewidth;
+      context.lineWidth = self.linewidth;
       context.moveTo(fromx, fromy);
       context.lineTo(tox, toy);
       context.strokeStyle = self.options.color;
@@ -503,7 +515,7 @@ MIT License
 
     drawText: function(context, text, x, y, maxWidth){
       var self = this;
-      context.font = self.options.fontsize + " sans-serif";
+      context.font = self.fontsize + " sans-serif";
       context.textBaseline = "top";
       context.fillStyle = self.options.color;
       self.wrapText(context, text, x + 3, y + 4, maxWidth, 25);
@@ -551,8 +563,8 @@ MIT License
           self.storedElement.push({
             type: "text",
             text: text,
-            fromx: self.fromxText - offset.left,
-            fromy: self.fromyText - offset.top,
+            fromx: (self.fromxText - offset.left) * self.compensationWidthRate,
+            fromy: (self.fromyText - offset.top) * self.compensationWidthRate,
             maxwidth: self.tox});
           if (self.storedUndo.length > 0){
             self.storedUndo = [];
@@ -575,8 +587,8 @@ MIT License
         pageY = event.originalEvent.touches[0].pageY;
       }
 
-      self.fromx = pageX - offset.left;
-      self.fromy = pageY - offset.top;
+      self.fromx = (pageX - offset.left) * self.compensationWidthRate;
+      self.fromy = (pageY - offset.top) * self.compensationWidthRate;
       self.fromxText = pageX;
       self.fromyText = pageY;
       if (self.options.type === "text"){
@@ -659,6 +671,7 @@ MIT License
       var offset = self.$el.offset();
       var pageX = event.pageX;
       var pageY = event.pageY;
+
       if (!pageX){
         pageX = event.originalEvent.touches[0].pageX;
       }
@@ -667,8 +680,8 @@ MIT License
       }
       if (self.options.type === "rectangle"){
         self.clear();
-        self.tox = pageX - offset.left - self.fromx;
-        self.toy = pageY - offset.top - self.fromy;
+        self.tox = (pageX - offset.left) * self.compensationWidthRate - self.fromx;
+        self.toy = (pageY - offset.top) * self.compensationWidthRate - self.fromy;
         self.drawRectangle(
           self.drawingContext,
           self.fromx,
@@ -678,8 +691,8 @@ MIT License
         );
       }else if (self.options.type === "arrow"){
         self.clear();
-        self.tox = pageX - offset.left;
-        self.toy = pageY - offset.top;
+        self.tox = (pageX - offset.left) * self.compensationWidthRate;
+        self.toy = (pageY - offset.top) * self.compensationWidthRate;
         self.drawArrow(
           self.drawingContext,
           self.fromx,
@@ -688,8 +701,8 @@ MIT License
           self.toy
         );
       }else if (self.options.type === "pen"){
-        self.tox = pageX - offset.left;
-        self.toy = pageY - offset.top;
+        self.tox = (pageX - offset.left) * self.compensationWidthRate;
+        self.toy = (pageY - offset.top) * self.compensationWidthRate;
         self.fromx = self.points[self.points.length - 1][0];
         self.fromy = self.points[self.points.length - 1][1];
         self.points.push([self.tox, self.toy]);
@@ -701,16 +714,16 @@ MIT License
         );
       }else if (self.options.type === "text"){
         self.clear();
-        self.tox = pageX - self.fromxText;
-        self.toy = pageY - self.fromyText;
+        self.tox = (pageX - self.fromxText) * self.compensationWidthRate;
+        self.toy = (pageY - self.fromyText) * self.compensationWidthRate;
         self.$textbox.css({
           left: self.fromxText + 2, top: self.fromyText,
           width: self.tox - 12, height: self.toy
         });
       }else if(self.options.type === "circle"){
         self.clear();
-        self.tox = pageX - offset.left;
-        self.toy = pageY - offset.top;
+        self.tox = (pageX - offset.left) * self.compensationWidthRate;
+        self.toy = (pageY - offset.top) * self.compensationWidthRate;
         self.drawCircle(
           self.drawingContext,
           self.fromx,
@@ -718,6 +731,23 @@ MIT License
           self.tox,
           self.toy
         );
+      }
+    },
+
+    annotateresize: function(){
+      var self = this;
+      var currentWidth = self.$el.width();
+      var currentcompensationWidthRate = self.compensationWidthRate;
+      self.compensationWidthRate = self.selectImageSize.width / currentWidth;
+      if (self.compensationWidthRate < 1){
+        self.compensationWidthRate = 1;
+      }
+      self.linewidth = self.options.linewidth * self.compensationWidthRate;
+      self.fontsize = String(parseInt(
+        self.options.fontsize.split("px")[0]) * self.compensationWidthRate) + "px";
+      if (currentcompensationWidthRate !== self.compensationWidthRate){
+        self.redraw();
+        self.clear();
       }
     },
 
