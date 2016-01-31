@@ -95,6 +95,10 @@ If multiple images provided, an image selector is necessary to switch. Image sel
 
 #Release notes
 
+###v0.0.4
+
+- Fix destroy method
+
 ###v0.0.3
 
 - Responsive annotation position
