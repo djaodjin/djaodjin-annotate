@@ -1,5 +1,5 @@
 /*
-djaodjin-annotate.js v0.0.2
+djaodjin-annotate.js v0.0.4
 Copyright (c) 2015, Djaodjin Inc.
 MIT License
 */
@@ -9,30 +9,30 @@ MIT License
 (function ($) {
    "use strict";
 
-   function Annotate(el, options){
-      this.options = options;
-      this.$el = $(el);
-      this.clicked = false;
-      this.fromx = null;
-      this.fromy = null;
-      this.fromxText = null;
-      this.fromyText = null;
-      this.tox = null;
-      this.toy = null;
-      this.points = [];
-      this.storedUndo = [];
-      this.storedElement = [];
-      this.images = [];
-      this.img = null;
-      this.selectedImage = null;
-      this.currentWidth = null;
-      this.currentHeight = null;
-      this.selectImageSize = {};
-      this.compensationWidthRate = 1;
-      this.linewidth = 1;
-      this.fontsize = 1;
-      this.init();
-   }
+  function Annotate(el, options){
+    this.options = options;
+    this.$el = $(el);
+    this.clicked = false;
+    this.fromx = null;
+    this.fromy = null;
+    this.fromxText = null;
+    this.fromyText = null;
+    this.tox = null;
+    this.toy = null;
+    this.points = [];
+    this.storedUndo = [];
+    this.storedElement = [];
+    this.images = [];
+    this.img = null;
+    this.selectedImage = null;
+    this.currentWidth = null;
+    this.currentHeight = null;
+    this.selectImageSize = {};
+    this.compensationWidthRate = 1;
+    this.linewidth = 1;
+    this.fontsize = 1;
+    this.init();
+  }
 
   Annotate.prototype = {
     init: function () {
@@ -753,6 +753,7 @@ MIT License
 
     destroy: function(){
       var self = this;
+      $(document).off(self.options.selectEvent, ".annotate-image-select");
       self.$tool.remove();
       self.$textbox.remove();
       self.$el.children("canvas").remove();

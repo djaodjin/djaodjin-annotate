@@ -2,7 +2,7 @@
   "name": "djaodjin-annotate",
   "description": "Simple jQuery plugin to annotate a screenshot",
   "homepage": "https://djaodjin.com/blog/jquery-plugin-to-annotate-images.blog",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "main": "djaodjin-annotate.js",
   "dependencies": {
     "jquery": "~1.11.3",
