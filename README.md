@@ -52,7 +52,8 @@ options = {
 	bootstrap: true,		// Bootstrap theme design
 	position: "top",		// Position of toolbar (available only with bootstrap)
 	idAttribute: "id",		// Attribute to select image id.
-	selectEvent: "change"	// listened event to select image
+	selectEvent: "change",	// listened event to select image
+	unselectTool: false		// display an unselect tool for mobile
 }
 ```
 
@@ -93,6 +94,11 @@ ex:
 If multiple images provided, an image selector is necessary to switch. Image selector must trigger an event on ```annotate-image-select``` class. you can custom the event by using ```selectEvent``` option (default: ```change```) and custom the readable image attribute by using ```idAttribute``` option (default: ```id```)
 
 #Release notes
+
+###v0.0.3
+
+- Responsive annotation position
+- Reponsive line width and font size
 
 ###v0.0.2
 
