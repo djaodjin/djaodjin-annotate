@@ -182,7 +182,7 @@ MIT License
         self.selectTool($(this));
       });
 
-      $("[data-tool=\"" + self.options.type + "\"").trigger("click");
+      $("[data-tool=\"" + self.options.type + "\"]").trigger("click");
 
       self.$tool.on("click", ".annotate-redo", function(event){
         self.redoaction(event);
@@ -758,10 +758,27 @@ MIT License
       self.$textbox.remove();
       self.$el.children("canvas").remove();
       self.$el.removeData("annotate");
-    }
+    },
+
+    exportImage: function(options){
+      var self = this;
+
+      var exportDefaults = {
+        type: 'image/jpeg',
+        quality: 0.75,
+      }
+
+      options = $.extend({}, exportDefaults, options);
+
+      var image = self.baseCanvas.toDataURL(
+        options.type, options.quality);
+
+      self.options.onExport(image);
+    },
+
   };
 
-  $.fn.annotate = function(options, newImage) {
+  $.fn.annotate = function(options, cmdOption) {
     if (options === "destroy"){
       if ($(this).data("annotate")){
         $(this).data("annotate").destroy();
@@ -770,7 +787,13 @@ MIT License
       }
     }else if (options === "push"){
       if ($(this).data("annotate")){
-        $(this).data("annotate").pushImage(newImage, true);
+        $(this).data("annotate").pushImage(cmdOption, true);
+      }else{
+        throw "No annotate initialized for: #" + $(this).attr("id");
+      }
+    }else if (options === "export"){
+      if ($(this).data("annotate")){
+        $(this).data("annotate").exportImage(cmdOption);
       }else{
         throw "No annotate initialized for: #" + $(this).attr("id");
       }
@@ -793,7 +816,10 @@ MIT License
     position: "top",
     idAttribute: "id",
     selectEvent: "change",
-    unselectTool: false
+    unselectTool: false,
+    onExport: function(image){
+      console.log(image);
+    }
   };
 
 })(jQuery);
