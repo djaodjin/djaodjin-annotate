@@ -29,7 +29,14 @@
 			$('#myCanvas').annotate({
 				color: 'blue',
 				bootstrap: true,
-				images: ['images/test.jpg']});
+				images: ['images/test.jpg'],
+				onExport: function(image){
+					if ($("#exported-image").length > 0){
+						$("#exported-image").remove();
+					}
+					$("body").append("<img src=\"" + image + "\" id=\"exported-image\">");
+				}
+			});
 
 			$(".push-new-image").click(function(event) {
 				if (counter === 0){
