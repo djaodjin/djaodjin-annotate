@@ -763,6 +763,10 @@ MIT License
     exportImage: function(options){
       var self = this;
 
+      if (self.$textbox.is(":visible")){
+        self.pushText();
+      }
+
       var exportDefaults = {
         type: 'image/jpeg',
         quality: 0.75,
