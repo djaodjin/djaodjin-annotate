@@ -126,14 +126,14 @@ MIT License
           + "</div>";
       }
       self.$tool = $(self.$tool);
-      $("body").append(self.$tool);
+      $(".annotate-container").append(self.$tool);
       var canvasPosition = self.$el.offset();
 
       if (self.options.position === "top"
         || (self.options.position !== "top" && !self.options.bootstrap)){
         self.$tool.css({
           "position": "absolute",
-          "top": canvasPosition.top - 35,
+          "top": - 35,
           "left": canvasPosition.left
         });
       }else{
