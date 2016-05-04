@@ -54,6 +54,7 @@ options = {
 	idAttribute: "id",		// Attribute to select image id.
 	selectEvent: "change",	// listened event to select image
 	unselectTool: false		// display an unselect tool for mobile
+	onExport: function(image){}	// Action when export function is called, with data uri as params (default log to console)
 }
 ```
 
@@ -77,6 +78,23 @@ $("#myCanvas").annotate("push", "images/test_2.jpg");
 
 ```javascript
 $("#myCanvas").annotate("push", {id:"unique_identifier", path: "images/test_2.jpg"});
+```
+
+
+### Export image
+
+```javascript
+$("#myCanvas").annotate("export", exportOptions);
+```
+Returns the image in Data URI format.
+
+* ExportOptions
+
+```javascript
+{
+	type: "image/jpeg"	// ex: "image/png"
+	quality: 0.75		// Available only for "image/jpeg"
+}
 ```
 
 ### Events
