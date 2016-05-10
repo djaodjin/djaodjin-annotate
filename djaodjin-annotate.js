@@ -524,14 +524,8 @@ MIT License
       self.tox = null;
       self.toy = null;
       self.points = [];
-      var pageX = event.pageX;
-      var pageY = event.pageY;
-      if (!pageX) {
-        pageX = event.originalEvent.touches[0].pageX;
-      }
-      if (!pageY) {
-        pageY = event.originalEvent.touches[0].pageY;
-      }
+      var pageX = event.pageX || event.originalEvent.touches[0].pageX;
+      var pageY = event.pageY || event.originalEvent.touches[0].pageY;
       self.fromx = (pageX - offset.left) * self.compensationWidthRate;
       self.fromy = (pageY - offset.top) * self.compensationWidthRate;
       self.fromxText = pageX;
@@ -639,14 +633,8 @@ MIT License
         return;
       }
       var offset = self.$el.offset();
-      var pageX = event.pageX;
-      var pageY = event.pageY;
-      if (!pageX) {
-        pageX = event.originalEvent.touches[0].pageX;
-      }
-      if (!pageY) {
-        pageY = event.originalEvent.touches[0].pageY;
-      }
+      var pageX = event.pageX || event.originalEvent.touches[0].pageX;
+      var pageY = event.pageY || event.originalEvent.touches[0].pageY;
       switch (self.options.type) {
         case 'rectangle':
           self.clear();
