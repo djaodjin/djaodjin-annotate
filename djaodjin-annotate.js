@@ -3,10 +3,14 @@ djaodjin-annotate.js v0.0.4
 Copyright (c) 2015, Djaodjin Inc.
 MIT License
 */
-/*global document jQuery Image window:true*/
+/* global document jQuery Image window:true*/
 (function($) {
   'use strict';
-
+  /**
+   * Function to annotate the image
+   * @param {[type]} el      [description]
+   * @param {Object} options [description]
+   */
   function Annotate(el, options) {
     this.options = options;
     this.$el = $(el);
@@ -71,35 +75,39 @@ MIT License
             '<input type="radio" name="' + self.toolOptionId +
             '" data-tool="null"' +
             ' data-toggle="tooltip" data-placement="top"' +
-            ' title="No tool selected"><i class="glyphicon glyphicon-ban-circle"></i>' +
+            ' title="No tool selected">' +
+            '<i class="glyphicon glyphicon-ban-circle"></i>' +
             '</label>';
         }
         self.$tool += '<label class="btn btn-primary active">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="rectangle"' +
           ' data-toggle="tooltip" data-placement="top"' +
-          ' title="Draw an rectangle"><i class="glyphicon glyphicon-unchecked"></i>' +
-          '</label>' + '<label class="btn btn-primary">' +
+          ' title="Draw an rectangle">' +
+          '<i class="glyphicon glyphicon-unchecked"></i>' +
+          '</label><label class="btn btn-primary">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="circle"' +
-          ' data-toggle="tooltip" data-placement="top" title="Write some text">' +
+          ' data-toggle="tooltip"' +
+          'data-placement="top" title="Write some text">' +
           '<i class="glyphicon glyphicon-copyright-mark"></i>' +
-          '</label>' + '<label class="btn btn-primary">' +
+          '</label><label class="btn btn-primary">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="text"' +
-          ' data-toggle="tooltip" data-placement="top" title="Write some text">' +
-          '<i class="glyphicon glyphicon-font"></i>' + '</label>' +
+          ' data-toggle="tooltip"' +
+          'data-placement="top" title="Write some text">' +
+          '<i class="glyphicon glyphicon-font"></i></label>' +
           '<label class="btn btn-primary">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="arrow"' +
           ' data-toggle="tooltip" data-placement="top" title="Draw an arrow">' +
-          '<i class="glyphicon glyphicon-arrow-up"></i>' + '</label>' +
+          '<i class="glyphicon glyphicon-arrow-up"></i></label>' +
           '<label class="btn btn-primary">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="pen"' +
           ' data-toggle="tooltip" data-placement="top" title="Pen Tool">' +
-          '<i class="glyphicon glyphicon-pencil"></i>' + '</label>' +
-          '</div>' + '<button type="button" id="redoaction"' +
+          '<i class="glyphicon glyphicon-pencil"></i></label>' +
+          '</div><button type="button" id="redoaction"' +
           ' title="Redo the last undone annotation"' +
           'class="btn btn-primary ' + classPosition2 + ' annotate-redo">' +
           '<i class="glyphicon glyphicon-arrow-right"></i></button>' +
@@ -114,12 +122,13 @@ MIT License
         self.$tool += '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="rectangle" checked>RECTANGLE' +
           '<input type="radio" name="' + self.toolOptionId +
-          '" data-tool="circle">CIRCLE' + '<input type="radio" name="' +
+          '" data-tool="circle">CIRCLE<input type="radio" name="' +
           self.toolOptionId + '" data-tool="text"> TEXT' +
           '<input type="radio" name="' + self.toolOptionId +
-          '" data-tool="arrow">ARROW' + '<input type="radio" name="' +
+          '" data-tool="arrow">ARROW<input type="radio" name="' +
           self.toolOptionId + '" data-tool="pen">PEN' +
-          '<button id="redoaction" title="Redo the last undone annotation">REDO</button>' +
+          '<button id="redoaction"' +
+          'title="Redo the last undone annotation">REDO</button>' +
           '</div>';
       }
       self.$tool = $(self.$tool);
@@ -128,30 +137,28 @@ MIT License
       if (self.options.position === 'top' || self.options.position !==
         'top' && !self.options.bootstrap) {
         self.$tool.css({
-          'position': 'absolute',
-          'top': -35,
-          'left': canvasPosition.left
+          position: 'absolute',
+          top: -35,
+          left: canvasPosition.left
         });
-      } else {
-        if (self.options.position === 'left' && self.options.bootstrap) {
-          self.$tool.css({
-            'position': 'absolute',
-            'top': canvasPosition.top - 35,
-            'left': canvasPosition.left - 20
-          });
-        } else if (self.options.position === 'right' && self.options.bootstrap) {
-          self.$tool.css({
-            'position': 'absolute',
-            'top': canvasPosition.top - 35,
-            'left': canvasPosition.left + self.baseCanvas.width + 20
-          });
-        } else if (self.options.position === 'bottom' && self.options.bootstrap) {
-          self.$tool.css({
-            'position': 'absolute',
-            'top': canvasPosition.top + self.baseCanvas.height + 35,
-            'left': canvasPosition.left
-          });
-        }
+      } else if (self.options.position === 'left' && self.options.bootstrap) {
+        self.$tool.css({
+          position: 'absolute',
+          top: canvasPosition.top - 35,
+          left: canvasPosition.left - 20
+        });
+      } else if (self.options.position === 'right' && self.options.bootstrap) {
+        self.$tool.css({
+          position: 'absolute',
+          top: canvasPosition.top - 35,
+          left: canvasPosition.left + self.baseCanvas.width + 20
+        });
+      } else if (self.options.position === 'bottom' && self.options.bootstrap) {
+        self.$tool.css({
+          position: 'absolute',
+          top: canvasPosition.top + self.baseCanvas.height + 35,
+          left: canvasPosition.left
+        });
       }
       self.$textbox = $('<textarea id=""' +
         ' style="position:absolute;z-index:100000;display:none;top:0;left:0;' +
@@ -205,7 +212,7 @@ MIT License
         event) {
         self.annotatemove(event);
       });
-      $(window).on('resize', function(event) {
+      $(window).on('resize', function() {
         self.annotateresize();
       });
       self.checkUndoRedo();
@@ -287,7 +294,8 @@ MIT License
       self.img = new Image();
       self.img.src = image.path;
       self.img.onload = function() {
-        if (!(self.options.width && self.options.height)) {
+        if ((self.options.width && self.options.height) !== undefined ||
+          (self.options.width && self.options.height) !== 0) {
           self.currentWidth = this.width;
           self.currentHeight = this.height;
           self.selectImageSize.width = this.width;
@@ -379,12 +387,13 @@ MIT License
             self.drawCircle(self.baseContext, element.fromx, element.fromy,
               element.tox, element.toy);
             break;
+          default:
         }
       }
     },
     clear: function() {
       var self = this;
-      //Clear Canvas
+      // Clear Canvas
       self.drawingCanvas.width = self.drawingCanvas.width;
     },
     drawRectangle: function(context, x, y, w, h) {
@@ -398,14 +407,14 @@ MIT License
       context.stroke();
     },
     drawCircle: function(context, x1, y1, x2, y2) {
-      var radiusX = (x2 - x1) * 0.5,
-        radiusY = (y2 - y1) * 0.5,
-        centerX = x1 + radiusX,
-        centerY = y1 + radiusY,
-        step = 0.05,
-        a = step,
-        pi2 = Math.PI * 2 - step,
-        self = this;
+      var radiusX = (x2 - x1) * 0.5;
+      var radiusY = (y2 - y1) * 0.5;
+      var centerX = x1 + radiusX;
+      var centerY = y1 + radiusY;
+      var step = 0.05;
+      var a = step;
+      var pi2 = Math.PI * 2 - step;
+      var self = this;
       context.beginPath();
       context.moveTo(centerX + radiusX * Math.cos(0), centerY + radiusY *
         Math.sin(0));
@@ -601,21 +610,20 @@ MIT License
             }
             self.points = [];
             break;
+          default:
         }
         if (self.storedUndo.length > 0) {
           self.storedUndo = [];
         }
         self.checkUndoRedo();
         self.redraw();
-      } else {
-        if (self.options.type === 'text') {
-          self.$textbox.css({
-            left: self.fromxText + 2,
-            top: self.fromyText,
-            width: 100,
-            height: 50
-          });
-        }
+      } else if (self.options.type === 'text') {
+        self.$textbox.css({
+          left: self.fromxText + 2,
+          top: self.fromyText,
+          width: 100,
+          height: 50
+        });
       }
     },
     annotateleave: function(event) {
@@ -684,6 +692,7 @@ MIT License
             self
             .tox, self.toy);
           break;
+        default:
       }
     },
     annotateresize: function() {
@@ -696,7 +705,8 @@ MIT License
         self.compensationWidthRate = 1;
       }
       self.linewidth = self.options.linewidth * self.compensationWidthRate;
-      self.fontsize = String(parseInt(self.options.fontsize.split('px')[0]) *
+      self.fontsize = String(parseInt(self.options.fontsize.split('px')[0],
+          10) *
         self.compensationWidthRate) + 'px';
       if (currentcompensationWidthRate !== self.compensationWidthRate) {
         self.redraw();
@@ -731,19 +741,22 @@ MIT License
       if ($annotate) {
         $annotate.destroy();
       } else {
-        throw 'No annotate initialized for: #' + $(this).attr('id');
+        throw new Error('No annotate initialized for: #' + $(this).attr(
+          'id'));
       }
     } else if (options === 'push') {
       if ($annotate) {
         $annotate.pushImage(cmdOption, true);
       } else {
-        throw 'No annotate initialized for: #' + $(this).attr('id');
+        throw new Error('No annotate initialized for: #' + $(this).attr(
+          'id'));
       }
     } else if (options === 'export') {
       if ($annotate) {
         $annotate.exportImage(cmdOption);
       } else {
-        throw 'No annotate initialized for: #' + $(this).attr('id');
+        throw new Error('No annotate initialized for: #' + $(this).attr(
+          'id'));
       }
     } else {
       var opts = $.extend({}, $.fn.annotate.defaults, options);
@@ -768,4 +781,4 @@ MIT License
       console.log(image);
     }
   };
-}(jQuery));
+})(jQuery);
