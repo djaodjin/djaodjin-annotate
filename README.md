@@ -111,6 +111,13 @@ ex:
 
 If multiple images provided, an image selector is necessary to switch. Image selector must trigger an event on ```annotate-image-select``` class. you can custom the event by using ```selectEvent``` option (default: ```change```) and custom the readable image attribute by using ```idAttribute``` option (default: ```id```)
 
+#Contributing
+
+The djaodjin-annotate project is using [Google Javascript style guidelines](https://google.github.io/styleguide/javascriptguide.xml),
+mechanically enforced through the [eslint-config-google](https://github.com/google/eslint-config-google) eslint plug-in.
+Thank you to @Josephdias92 for the initial work on this.
+
+
 #Release notes
 
 ###v0.0.4
