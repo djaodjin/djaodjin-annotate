@@ -1,0 +1,23 @@
+{
+  "name": "djaodjin-annotate",
+  "version": "1.0.0",
+  "description": "djaodjin-annotate.js is a simple jquery plugin allowing you to annotate a screenshot. Try the live demo on [DjaoDjin blog](https://djaodjin.com/blog/jquery-plugin-to-annotate-images.blog).",
+  "main": "djaodjin-annotate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "devDependencies": {
+    "eslint": "^2.9.0",
+    "eslint-config-google": "^0.5.0"
+  }
+}
