@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/djaodjin/djaodjin-annotate.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": ""
   },
-  "homepage": "",
+  "homepage": "https://djaodjin.com/blog/jquery-plugin-to-annotate-images.blog",
   "devDependencies": {
     "eslint": "^2.9.0",
     "eslint-config-google": "^0.5.0"
