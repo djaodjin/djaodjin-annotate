@@ -231,7 +231,7 @@ MIT License
       }
       return str;
     },
-    pushImage: function(newImage, set) {
+    pushImage: function(newImage, set, callback) {
       var self = this;
       var id = null;
       var path = null;
@@ -258,6 +258,12 @@ MIT License
       self.images.push(image);
       if (set) {
         self.setBackgroundImage(image);
+      }
+      if (callback) {
+        callback({
+          id: image.id,
+          path: image.path
+        });
       }
       self.$el.trigger('annotate-image-added', [
         image.id,
@@ -721,7 +727,7 @@ MIT License
       self.$el.children('canvas').remove();
       self.$el.removeData('annotate');
     },
-    exportImage: function(options) {
+    exportImage: function(options, callback) {
       var self = this;
       if (self.$textbox.is(':visible')) {
         self.pushText();
@@ -732,10 +738,13 @@ MIT License
       };
       options = $.extend({}, exportDefaults, options);
       var image = self.baseCanvas.toDataURL(options.type, options.quality);
+      if (callback) {
+        callback(image);
+      }
       self.options.onExport(image);
     }
   };
-  $.fn.annotate = function(options, cmdOption) {
+  $.fn.annotate = function(options, cmdOption, callback) {
     var $annotate = $(this).data('annotate');
     if (options === 'destroy') {
       if ($annotate) {
@@ -746,14 +755,14 @@ MIT License
       }
     } else if (options === 'push') {
       if ($annotate) {
-        $annotate.pushImage(cmdOption, true);
+        $annotate.pushImage(cmdOption, true, callback);
       } else {
         throw new Error('No annotate initialized for: #' + $(this).attr(
           'id'));
       }
     } else if (options === 'export') {
       if ($annotate) {
-        $annotate.exportImage(cmdOption);
+        $annotate.exportImage(cmdOption, callback);
       } else {
         throw new Error('No annotate initialized for: #' + $(this).attr(
           'id'));

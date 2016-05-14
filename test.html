@@ -48,7 +48,9 @@
 			});
 
 			$(".export-image").click(function(event) {
-				$('#myCanvas').annotate("export", {type: "image/jpeg", quality: 0.2});
+				$('#myCanvas').annotate("export", {type: "image/jpeg", quality: 0.2},function(d){
+					console.log(d);
+				});
 			});
 		});
 	</script>
