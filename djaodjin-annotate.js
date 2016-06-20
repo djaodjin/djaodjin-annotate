@@ -4,6 +4,9 @@ Copyright (c) 2015, Djaodjin Inc.
 MIT License
 */
 /* global document jQuery Image window:true*/
+
+var keepElement = 'FOUND';
+
 (function($) {
   'use strict';
   /**
@@ -231,6 +234,15 @@ MIT License
       }
       return str;
     },
+    addElements: function(newStoredElements, set, callback)
+    {
+      var self = this; 
+      this.storedElement = newStoredElements; 
+      //console.log('DJ: Adding new annotations'); 
+      self.clear();
+      self.redraw();
+      
+    },    
     pushImage: function(newImage, set, callback) {
       var self = this;
       var id = null;
@@ -760,6 +772,15 @@ MIT License
         throw new Error('No annotate initialized for: #' + $(this).attr(
           'id'));
       }
+    
+    }else if (options === 'fill') {
+      if ($annotate) {
+        $annotate.addElements(cmdOption, true, callback);
+      } else {
+        throw new Error('No annotate initialized for: #' + $(this).attr(
+          'id'));
+      }
+    
     } else if (options === 'export') {
       if ($annotate) {
         $annotate.exportImage(cmdOption, callback);
