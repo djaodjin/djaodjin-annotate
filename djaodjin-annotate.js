@@ -5,8 +5,6 @@ MIT License
 */
 /* global document jQuery Image window:true*/
 
-var keepElement = 'FOUND';
-
 (function($) {
   'use strict';
   /**
