@@ -8,6 +8,16 @@
     "jquery": "~1.11.3",
     "bootstrap": "~3.3.5"
   },
+  "scripts": {
+    "lint": "eslint"
+  },
+  "devDependencies": {
+    "eslint": "^2.7.0",
+    "eslint-config-google": "^0.5.0"
+  },
+  "eslintConfig": {
+    "extends": "google"
+  },
   "ignore": [
     "*.html",
     "*.md",
