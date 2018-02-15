@@ -308,6 +308,7 @@ MIT License
         currentImage.storedUndo = self.storedUndo;
       }
       self.img = new Image();
+      self.img.crossOrigin = 'Anonymous';
       self.img.src = image.path;
       self.img.onload = function() {
         if ((self.options.width && self.options.height) !== undefined ||
