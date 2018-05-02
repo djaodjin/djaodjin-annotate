@@ -310,8 +310,7 @@ MIT License
       self.img = new Image();
       self.img.src = image.path;
       self.img.onload = function() {
-        if ((self.options.width && self.options.height) !== undefined ||
-          (self.options.width && self.options.height) !== 0) {
+        if (!self.options.width && !self.options.height) {
           self.currentWidth = this.width;
           self.currentHeight = this.height;
           self.selectImageSize.width = this.width;
