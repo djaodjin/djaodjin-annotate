@@ -66,19 +66,19 @@ MIT License
         classPosition2 = 'btn-block';
       }
       if (self.options.bootstrap) {
-        self.$tool = '<div id="">' +
+        self.$tool = '<div id="" class="btn-group" role="group" >' +
+          '<div class="' + classPosition1 + '" data-toggle="buttons">' +
           '<button id="undoaction" title="Undo the last annotation"' +
           ' class="btn btn-primary ' + classPosition2 +
           ' annotate-undo">' +
-          '<i class="glyphicon glyphicon-arrow-left"></i></button>' +
-          '<div class="' + classPosition1 + '" data-toggle="buttons">';
+          ' <span class="glyphicon glyphicon-arrow-left"></span></button>';
         if (self.options.unselectTool) {
           self.$tool += '<label class="btn btn-danger active">' +
             '<input type="radio" name="' + self.toolOptionId +
             '" data-tool="null"' +
             ' data-toggle="tooltip" data-placement="top"' +
             ' title="No tool selected">' +
-            '<i class="glyphicon glyphicon-ban-circle"></i>' +
+            '<span class="glyphicon glyphicon-ban-circle"></span>' +
             '</label>';
         }
         self.$tool += '<label class="btn btn-primary active">' +
@@ -86,34 +86,34 @@ MIT License
           '" data-tool="rectangle"' +
           ' data-toggle="tooltip" data-placement="top"' +
           ' title="Draw an rectangle">' +
-          '<i class="glyphicon glyphicon-unchecked"></i>' +
+          ' <span class="glyphicon glyphicon-unchecked"></span>' +
           '</label><label class="btn btn-primary">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="circle"' +
           ' data-toggle="tooltip"' +
           'data-placement="top" title="Write some text">' +
-          '<i class="glyphicon glyphicon-copyright-mark"></i>' +
+          ' <span class="glyphicon glyphicon-copyright-mark"></span>' +
           '</label><label class="btn btn-primary">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="text"' +
           ' data-toggle="tooltip"' +
           'data-placement="top" title="Write some text">' +
-          '<i class="glyphicon glyphicon-font"></i></label>' +
+          ' <span class="glyphicon glyphicon-font"></span></label>' +
           '<label class="btn btn-primary">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="arrow"' +
           ' data-toggle="tooltip" data-placement="top" title="Draw an arrow">' +
-          '<i class="glyphicon glyphicon-arrow-up"></i></label>' +
+          ' <span class="glyphicon glyphicon-arrow-up"></span></label>' +
           '<label class="btn btn-primary">' +
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="pen"' +
           ' data-toggle="tooltip" data-placement="top" title="Pen Tool">' +
-          '<i class="glyphicon glyphicon-pencil"></i></label>' +
-          '</div><button type="button" id="redoaction"' +
+          ' <span class="glyphicon glyphicon-pencil"></span></label>' +
+          '<button type="button" id="redoaction"' +
           ' title="Redo the last undone annotation"' +
           'class="btn btn-primary ' + classPosition2 + ' annotate-redo">' +
-          '<i class="glyphicon glyphicon-arrow-right"></i></button>' +
-          '</div>';
+          ' <span class="glyphicon glyphicon-arrow-right"></span></button>' +
+          '</div></div>';
       } else {
         self.$tool = '<div id="" style="display:inline-block">' +
           '<button id="undoaction">UNDO</button>';

@@ -1,10 +1,10 @@
-#djaodjin-annotate.js
+# djaodjin-annotate.js
 
 djaodjin-annotate.js is a simple jquery plugin allowing you to annotate
 a screenshot. Try the live demo on [DjaoDjin blog](https://djaodjin.com/blog/jquery-plugin-to-annotate-images.blog).
 
 
-#Usage
+# Usage
 
 Load djaodjin-annotate.css and djaodjin-annotate.js
 ```html
@@ -13,7 +13,7 @@ Load djaodjin-annotate.css and djaodjin-annotate.js
 <head>
 	<meta charset=utf-8 />
 	<title></title>
-	<link rel="stylesheet" type="text/css" href="/static/css/djaodjin-annotate.css" />
+	<link rel="stylesheet" type="text/css" href="/static/css/annotate.css" />
 </head>
 <body>
 
@@ -120,22 +120,22 @@ Thank you to @Josephdias92 for the initial work on this.
 
 #Release notes
 
-###v0.0.4
+### v0.0.4
 
 - Fix destroy method
 
-###v0.0.3
+### v0.0.3
 
 - Responsive annotation position
 - Reponsive line width and font size
 
-###v0.0.2
+### v0.0.2
 
 - Ability to destroy an annotate instance
 - work with multiple images
 - Ability add new image after initialization
 
-###v0.0.1
+### v0.0.1
 
 - bower release
 
