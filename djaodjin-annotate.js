@@ -491,7 +491,7 @@ MIT License
     },
     drawText: function(context, text, x, y, maxWidth) {
       var self = this;
-      context.font = self.fontsize + ' sans-serif';
+      context.font = self.fontweight + ' ' + self.fontsize + ' sans-serif';
       context.textBaseline = 'top';
       context.fillStyle = self.options.color;
       self.wrapText(context, text, x + 3, y + 4, maxWidth, 25);
