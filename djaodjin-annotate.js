@@ -41,6 +41,7 @@ MIT License
       var self = this;
       self.linewidth = self.options.linewidth;
       self.fontsize = self.options.fontsize;
+      self.fontweight = self.options.fontweight;
       self.$el.addClass('annotate-container');
       self.$el.css({
         cursor: 'crosshair'
@@ -165,6 +166,7 @@ MIT License
         ' style="position:absolute;z-index:100000;display:none;top:0;left:0;' +
         'background:transparent;border:1px dotted; line-height:25px;' +
         ';font-size:' + self.fontsize +
+        ';font-weight:' + self.fontweight +
         ';font-family:sans-serif;color:' + self.options.color +
         ';word-wrap: break-word;outline-width: 0;overflow: hidden;' +
         'padding:0px"></textarea>');
@@ -801,6 +803,7 @@ MIT License
     type: 'rectangle',
     linewidth: 2,
     fontsize: '20px',
+    fontweight: 'normal',
     bootstrap: false,
     position: 'top',
     idAttribute: 'id',
