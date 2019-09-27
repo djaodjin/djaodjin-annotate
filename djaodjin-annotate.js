@@ -115,7 +115,7 @@ MIT License
           '</div></div>';
       } else {
         self.$tool = '<div id="" style="display:inline-block">' +
-          '<button id="undoaction">UNDO</button>';
+          '<button id="undoaction" class="annotate-undo">UNDO</button>';
         if (self.options.unselectTool) {
           self.$tool += '<input type="radio" name="' + self.toolOptionId +
             '" data-tool="null">NO TOOL SELECTED';
@@ -128,7 +128,7 @@ MIT License
           '<input type="radio" name="' + self.toolOptionId +
           '" data-tool="arrow">ARROW<input type="radio" name="' +
           self.toolOptionId + '" data-tool="pen">PEN' +
-          '<button id="redoaction"' +
+          '<button id="redoaction" class="annotate-redo"' +
           'title="Redo the last undone annotation">REDO</button>' +
           '</div>';
       }
@@ -339,17 +339,24 @@ MIT License
     },
     checkUndoRedo: function() {
       var self = this;
-      self.$tool.children('.annotate-redo').attr('disabled', self.storedUndo
-        .length === 0);
-      self.$tool.children('.annotate-undo').attr('disabled', self.storedElement
-        .length === 0);
+      self.$tool.find('.annotate-redo').attr(
+        'disabled',
+        self.storedUndo.length === 0
+      );
+      self.$tool.find('.annotate-undo').attr(
+        'disabled',
+        self.storedElement.length === 0
+      );
     },
     undoaction: function(event) {
       event.preventDefault();
       var self = this;
-      self.storedUndo.push(self.storedElement[self.storedElement.length -
-        1]);
-      self.storedElement.pop();
+      var action = self.storedElement.pop();
+
+      if (action) {
+        self.storedUndo.push(action);
+      }
+
       self.checkUndoRedo();
       self.clear();
       self.redraw();
@@ -357,8 +364,12 @@ MIT License
     redoaction: function(event) {
       event.preventDefault();
       var self = this;
-      self.storedElement.push(self.storedUndo[self.storedUndo.length - 1]);
-      self.storedUndo.pop();
+      var action = self.storedUndo.pop();
+
+      if (action) {
+        self.storedElement.push(action);
+      }
+
       self.checkUndoRedo();
       self.clear();
       self.redraw();
